@@ -11,3 +11,4 @@ venv/
 .env
 .devcontainer/devcontainer.json
 .devcontainer/Dockerfile
+mlruns/
