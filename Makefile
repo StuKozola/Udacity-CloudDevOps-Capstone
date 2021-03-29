@@ -4,6 +4,7 @@
 # Perform linting
 # Building docker container
 # Uploading image to repository
+# Running test models to populate mlflow runs
 # 
 
 setup:
@@ -46,14 +47,12 @@ lint:
 	# lint python source: https://www.pylint.org/
 
 test:
-	# train the model trial 1
+	# train the model with two trial runs
 
-	# train the model trial 2
-
-build-docker:
+build-image:
 	# build the image and add tag
-	docker build --tag=mflow_server
-	# list images to verify built
+	docker build --tag=mflow_server .
+	# list images to verify build
 	docker image ls
 
 upload-image:
@@ -64,7 +63,12 @@ upload-image:
 	docker image tab mlflow_serer $dockerpath;\
 	docker image push $dockerpath;
 
-run-docker:
+run-image:
 	# run docker container locally
 	docker run -p 5000:5000 mlflow_server
 
+build-local: setup install-local build-image lint
+run-local: build-local run-image
+
+#local-minikube:
+#remote

@@ -9,9 +9,7 @@ FROM python:3.8.2-slim
 # copy source files to working directory
 
 # Install dependencies for mlflow
-RUN pip install mlflow[extras]=1.9.1 && \
-    pip install psycopg2-binary=2.8.5 && \
-    pip install boto3=1.15.16
+RUN pip install mlflow[extras]
 
 # Expose port(s)
 EXPOSE 5000
