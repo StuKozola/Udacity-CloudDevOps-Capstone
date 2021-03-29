@@ -1,0 +1,13 @@
+*~
+*.log
+*.tmp
+*.tmp.*
+log.txt
+.vscode/
+*.pem
+.idea/
+.DS_Store
+venv/
+.env
+.devcontainer/devcontainer.json
+.devcontainer/Dockerfile
