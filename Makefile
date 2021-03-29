@@ -7,7 +7,7 @@
 # Running test models to populate mlflow runs
 # 
 
-setup:
+setup-env:
 	# create a python virtual environment
 	# source the evinronment: source ~/.devops/bin/activate
 	python3 -m venv ~/.devops
@@ -67,7 +67,8 @@ run-image:
 	# run docker container locally
 	docker run -p 5000:5000 mlflow_server
 
-build-local: setup install-local build-image lint
+install-local: install-env install-hadolint install-docker install-minikube
+build-local: setup-env install-local build-image lint
 run-local: build-local run-image
 
 #local-minikube:

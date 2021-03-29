@@ -9,6 +9,5 @@ log.txt
 .DS_Store
 venv/
 .env
-.devcontainer/devcontainer.json
-.devcontainer/Dockerfile
+.devcontainer/
 mlruns/
