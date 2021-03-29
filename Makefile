@@ -51,24 +51,24 @@ test:
 
 build-image:
 	# build the image and add tag
-	docker build --tag=mflow_server .
+	sudo docker build --tag=mflow_server .
 	# list images to verify build
-	docker image ls
+	sudo docker image ls
 
 upload-image:
 	# Upload docker image to repository
-	dockerpath="kozola/mlflow_server"; \
-	echo "Docker ID and Image: $dockerpath"; \
-	docker login; \
-	docker image tab mlflow_serer $dockerpath;\
-	docker image push $dockerpath;
+	export DOCKERPATH="kozola/mlflow_server"; \
+	echo "Docker ID and Image: ${DOCKERPATH}"; \
+	sudo docker login; \
+	sudo docker image tag mlflow_serer "${DOCKERPATH}"";\
+	sudo docker image push "${DOCKERPATH}"";
 
 run-image:
 	# run docker container locally
-	docker run -p 5000:5000 mlflow_server
+	sudo docker run -p 5000:5000 mlflow_server
 
-install-local: install-env install-hadolint install-docker install-minikube
-build-local: setup-env install-local build-image lint
+install-local: setup-env install-env install-hadolint install-docker install-minikube
+build-local: lint build-image
 run-local: build-local run-image
 
 #local-minikube:

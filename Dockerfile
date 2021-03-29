@@ -9,8 +9,7 @@ FROM python:3.8.2-slim
 # copy source files to working directory
 
 # Install dependencies for mlflow
-RUN pip install --upgrade pip && \
-    pip install mlflow[extras]
+RUN pip install --no-cache-dir mlflow[extras]==1.15.0
 
 # Expose port(s)
 EXPOSE 5000
