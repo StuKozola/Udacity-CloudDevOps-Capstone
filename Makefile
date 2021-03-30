@@ -39,12 +39,21 @@ install-docker:
 	sudo apt update
 	apt-cache policy docker-ce
 	sudo apt install docker-ce
-	sudo systemctl status docker
+	sudo systemctl status docker &
 
 install-minikube:
-	# install minikube
+	# install minikube and kubectl
 	curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
 	sudo install minikube-linux-amd64 /usr/local/bin/minikube
+	sudo curl -LO "https://dl.k8s.io/release/$$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+	sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+	sudo groupadd -f docker
+	sudo usermod -aG docker $$USER
+	minikube config set driver docker
+	minikube start
+	kubectl get po -A
+	minikube addons enable ingress
+	minikube ip
 
 ### buld and test
 lint:
@@ -91,17 +100,25 @@ run-repo:
 	sudo docker pull ${DOCKERPATH}
 	sudo sudo docker run -p 5000:5000 ${DOCKERPATH}
 
+run-local-k8:
+	# run local minikube configuration
+	kubectl create -f k8/postgres.yml
+	kubectl create -f k8/minio.yml
+	kubectl create -f k8/mlflow-server.yml
 
-### local only (no docker, minikube)
+### local only (no docker, no minikube)
 install-local: setup-env install-env
 build-local: test-models
 
-### local docker image
-install-local-img: setup-env install-env install-hadolint install-docker
-build-local-img: test-models
-
-#local-minikube:
-#remote
+### local local with minikube and docker
+install-local-k8: setup-env install-env install-hadolint install-docker install-minikube
+build-local-k8: lint test-models
 
 clean:
 	if [ -d "mlruns" ]; then rm -r mlruns; fi;
+	if [ -f "minikube-linux-amd64" ]; then rm -f minikube-linux-amd64; fi;
+	if [ -f "kubectl" ]; then rm -f kubectl; fi;
+
+destroy:
+	minikube stop
+	minikube delete --all
