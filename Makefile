@@ -52,8 +52,14 @@ lint:
 	hadolint Dockerfile
 	# lint python source: https://www.pylint.org/
 
-test:
-	# train the model with two trial runs
+test-models:
+	# train the model with four trial runs
+	. ~/.devops/bin/activate; \
+	python model/train.py 1 1; \
+	python model/train.py 1 0.5; \
+	python model/train.py 0.5 1; \
+	python model/train.py 0.5 0.5; \
+	deactivate;
 
 build-image:
 	# build the image and add tag
@@ -71,6 +77,11 @@ upload-image:
 	sudo docker image push ${DOCKERPATH};
 
 ### Run
+run-local:
+	# run the installed version of mlflow (not in docker)
+	. ~/.devops/bin/activate; \
+	mlflow ui;
+
 run-image:
 	# run docker container locally
 	sudo docker run -p 5000:5000 ${MLFLOW_SERVER}
@@ -81,10 +92,16 @@ run-repo:
 	sudo sudo docker run -p 5000:5000 ${DOCKERPATH}
 
 
-### 
-install-local: setup-env install-env install-hadolint install-docker install-minikube
-build-local: lint build-image
-run-local: build-local run-image
+### local only (no docker, minikube)
+install-local: setup-env install-env
+build-local: test-models
+
+### local docker image
+install-local-img: setup-env install-env install-hadolint install-docker
+build-local-img: test-models
 
 #local-minikube:
 #remote
+
+clean:
+	if [ -d "mlruns" ]; then rm -r mlruns; fi;
