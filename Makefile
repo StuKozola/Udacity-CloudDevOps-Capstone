@@ -5,8 +5,13 @@
 # Building docker container
 # Uploading image to repository
 # Running test models to populate mlflow runs
-# 
+# Running mlflow locally (stand alone, minikube) or remote (with server url)
 
+### variables
+MLFLOW_SERVER=mlflow_server
+DOCKERPATH=kozola/$(MLFLOW_SERVER)
+
+### Setup ans installation
 setup-env:
 	# create a python virtual environment
 	# source the evinronment: source ~/.devops/bin/activate
@@ -41,6 +46,7 @@ install-minikube:
 	curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
 	sudo install minikube-linux-amd64 /usr/local/bin/minikube
 
+### buld and test
 lint:
 	# lint dockerfiles: https://github.com/hadolint/hadolint
 	hadolint Dockerfile
@@ -51,22 +57,31 @@ test:
 
 build-image:
 	# build the image and add tag
-	sudo docker build --tag=mflow_server .
+	sudo docker build --tag=${MLFLOW_SERVER} .
 	# list images to verify build
 	sudo docker image ls
 
+### Deployment of artifacts
 upload-image:
 	# Upload docker image to repository
-	export DOCKERPATH="kozola/mlflow_server"; \
-	echo "Docker ID and Image: ${DOCKERPATH}"; \
+	export DOCKERPATH=$(DOCKERPATH); \
+	echo "Docker ID and Image: $(DOCKERPATH)"; \
 	sudo docker login; \
-	sudo docker image tag mlflow_serer "${DOCKERPATH}"";\
-	sudo docker image push "${DOCKERPATH}"";
+	sudo docker image tag ${MLFLOW_SERVER} ${DOCKERPATH};\
+	sudo docker image push ${DOCKERPATH};
 
+### Run
 run-image:
 	# run docker container locally
-	sudo docker run -p 5000:5000 mlflow_server
+	sudo docker run -p 5000:5000 ${MLFLOW_SERVER}
 
+run-repo:
+	# grab the image stored in dockerhub and run it
+	sudo docker pull ${DOCKERPATH}
+	sudo sudo docker run -p 5000:5000 ${DOCKERPATH}
+
+
+### 
 install-local: setup-env install-env install-hadolint install-docker install-minikube
 build-local: lint build-image
 run-local: build-local run-image
