@@ -76,6 +76,10 @@ build-image:
 	# list images to verify build
 	sudo docker image ls
 
+scan:
+	# scan docker image for vulnerabilities
+	docker scan --file Dockerfile 
+
 ### Deployment of artifacts
 upload-image:
 	# Upload docker image to repository
@@ -105,6 +109,7 @@ run-local-k8:
 	kubectl create -f k8/postgres.yml
 	kubectl create -f k8/minio.yml
 	kubectl create -f k8/mlflow-server.yml
+	kubectl get services
 
 ### local only (no docker, no minikube)
 install-local: setup-env install-env

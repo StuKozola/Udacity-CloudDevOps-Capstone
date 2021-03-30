@@ -64,9 +64,12 @@ spec:
     http:
       paths:
         - backend:
-            serviceName: mlflow-minio-service
-            servicePort: 9000
+            service:
+              name: mlflow-minio-service
+              port: 
+                number: 9000
           path: /
+          pathType: ImplementationSpecific
 ---
 # Persistent storage
 apiVersion: v1

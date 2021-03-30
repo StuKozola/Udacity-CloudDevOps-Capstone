@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: mlflow-deployment
-        image: kozola/mlflow-server # use deployed docker container
+        image: kozola/mlflow_server # use deployed docker container
         imagePullPolicy: Always
         args:
         - --host=0.0.0.0
