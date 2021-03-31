@@ -11,7 +11,15 @@
 MLFLOW_SERVER=mlflow_server
 DOCKERPATH=kozola/$(MLFLOW_SERVER)
 
-### Setup ans installation
+### Setup an installation
+setup-ubuntu:
+	# install dependecies for ubuntu
+	sudo apt update
+	sudo apt upgrade
+	sudo apt install git
+	sudo apt install make
+	sudo apt install python3-venv
+
 setup-env:
 	# create a python virtual environment
 	# source the evinronment: source ~/.devops/bin/activate
@@ -39,6 +47,8 @@ install-docker:
 	sudo apt update
 	apt-cache policy docker-ce
 	sudo apt install docker-ce
+	sudo groupadd -f docker
+	sudo usermod -aG docker $$USER
 	sudo systemctl status docker &
 
 install-minikube:
@@ -47,13 +57,20 @@ install-minikube:
 	sudo install minikube-linux-amd64 /usr/local/bin/minikube
 	sudo curl -LO "https://dl.k8s.io/release/$$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
 	sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
-	sudo groupadd -f docker
-	sudo usermod -aG docker $$USER
 	minikube config set driver docker
+	minikube delete
 	minikube start
 	kubectl get po -A
 	minikube addons enable ingress
 	minikube ip
+
+install-anchore:
+	sudo apt-get update
+	sudo apt-get install python3-pip
+	sudo pip install anchorecli
+	sudo export PATH="$$HOME/.local/bin/:$$PATH"
+
+
 
 ### buld and test
 lint:
@@ -78,7 +95,7 @@ build-image:
 
 scan:
 	# scan docker image for vulnerabilities
-	docker scan --file Dockerfile 
+	docker scan ${MLFLOW_SERVER} 
 
 ### Deployment of artifacts
 upload-image:
@@ -115,7 +132,7 @@ run-local-k8:
 install-local: setup-env install-env
 build-local: test-models
 
-### local local with minikube and docker
+### local with minikube and docker
 install-local-k8: setup-env install-env install-hadolint install-docker install-minikube
 build-local-k8: lint test-models
 
