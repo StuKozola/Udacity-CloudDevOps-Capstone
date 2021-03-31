@@ -33,10 +33,11 @@ To install and run on a clean Ubuntu installation:
     make build-local-k8
     make run-local-k8
 ```
+Next you will need to modify host files
 After running these commands, you should see the MLFlow experiment tracking app in a local browser (http://127.0.0.1:5000).
 ![MLFlow Experiment Tracking App with 4 runs](images/local_run_k8.png)
 
 You can also run `make clean` to clean up temporary downloaded files, and `make destroy` to shut down and delete pods created in minikube.
-### Continuos Deployment Pipeline
+### Continuous Deployment Pipeline
 
 
