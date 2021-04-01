@@ -10,6 +10,9 @@
 ### variables
 MLFLOW_SERVER=mlflow_server
 DOCKERPATH=kozola/$(MLFLOW_SERVER)
+DEV_HOST=mlflow-dev
+DEV_TRACKING=mlflow-server.local
+DEV_MINIO=mlflow-minio.local
 
 ### Setup an installation
 setup-ubuntu:
@@ -27,10 +30,12 @@ setup-env:
 
 set-dev-env:
 	# set dev environment variables for local minikube testing
-	echo  "MLFLOW_TRACKING_URI='http://mlflow-server.local'" > .env; \
-	echo  "MLFLOW_S3_ENDPOINT_URL='http://mlflow-minio.local'" >> .env; \
+	echo  "MLFLOW_TRACKING_URI='http://$DEV_TRACKING'" > .env; \
+	echo  "MLFLOW_S3_ENDPOINT_URL='http://$DEV_MINIO'" >> .env; \
 	echo  "AWS_ACCESS_KEY_ID='minio'" >> .env; \
 	echo  "AWS_SECRET_ACCESS_KEY='minio123'" >> .env; \
+	echo  "TRACKING_HOST='minio123'" >> .env; \
+	echo  "DEV_SERVER_HOST"='$DEV_HOST'" >> .env;
 
 install-env:
 	# install requirements inside the virtual env for running mlflow locally
@@ -140,11 +145,12 @@ run-repo:
 	sudo docker pull ${DOCKERPATH}
 	sudo sudo docker run -p 5000:5000 ${DOCKERPATH}
 
-run-local-k8:
+run-local-k8: set-dev-env
 	minikube start
 	kubectl get po -A
 	minikube addons enable ingress
-	minikube ip
+	sudo ./insert-hosts.sh (`minikube ip`) $DEV_HOST $DEV_TRACKING $DEV_MINIO
+
 	# run local minikube configuration
 	kubectl create -f k8/postgres.yml
 	kubectl create -f k8/minio.yml
