@@ -34,8 +34,8 @@ set-dev-env:
 	echo  "MLFLOW_S3_ENDPOINT_URL='http://$DEV_MINIO'" >> .env; \
 	echo  "AWS_ACCESS_KEY_ID='minio'" >> .env; \
 	echo  "AWS_SECRET_ACCESS_KEY='minio123'" >> .env; \
-	echo  "TRACKING_HOST='minio123'" >> .env; \
-	echo  "DEV_SERVER_HOST"='$DEV_HOST'" >> .env;
+	echo  "TRACKING_HOST=$DEV_TRACKING" >> .env; \
+	echo  "DEV_SERVER_HOST=$DEV_HOST" >> .env;
 
 install-env:
 	# install requirements inside the virtual env for running mlflow locally
@@ -149,7 +149,8 @@ run-local-k8: set-dev-env
 	minikube start
 	kubectl get po -A
 	minikube addons enable ingress
-	sudo ./insert-hosts.sh (`minikube ip`) $DEV_HOST $DEV_TRACKING $DEV_MINIO
+	sudo chmod +x insert-hosts.sh
+	./insert-hosts.sh `minikube ip` ${DEV_HOST} ${DEV_TRACKING} ${DEV_MINIO}
 
 	# run local minikube configuration
 	kubectl create -f k8/postgres.yml

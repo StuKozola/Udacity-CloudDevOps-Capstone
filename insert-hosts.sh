@@ -3,7 +3,7 @@
 # sourced from https://stackoverflow.com/questions/19339248/append-line-to-etc-hosts-file-with-shell-script/19339320
 
 # path to hosts file\
-host_file="hosts" #"/etc/hosts"
+host_file="/etc/hosts"
 
 # insert/update hosts entry
 ip_address="$1"
