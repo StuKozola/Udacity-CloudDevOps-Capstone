@@ -4,7 +4,7 @@
 # usage: manage-etc-hosts [add|remove] <hostname> "<domain_names>"
 
 # Path to your hosts file
-hostsFile="/etc/hosts"
+hostsFile="hosts" #"/etc/hosts"
 
 # Default IP address for host
 ip="0.0.0.0"

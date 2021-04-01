@@ -1,16 +1,20 @@
 #!/usr/bin/env bash
 
-# https://stackoverflow.com/questions/19339248/append-line-to-etc-hosts-file-with-shell-script/19339320
+# sourced from https://stackoverflow.com/questions/19339248/append-line-to-etc-hosts-file-with-shell-script/19339320
 
 # path to hosts file\
-hostfile="hosts" #"/etc/hosts"
+host_file="hosts" #"/etc/hosts"
 
 # insert/update hosts entry
-ip_address="192.168.x.x"
-host_name="my.hostname.example.com"
+ip_address="$1"
+host_name="$2"
+alias1="$3"
+alias2="$4"
+
 # find existing instances in the host file and save the line numbers
-matches_in_hosts="$(grep -n $host_name /etc/hosts | cut -f1 -d:)"
-host_entry="${ip_address} ${host_name}"
+matches_in_hosts="$(grep -n $host_name $host_file| cut -f1 -d:)"
+host_entry="${ip_address} ${host_name} ${alias1} ${alias2}"
+echo $host_entry
 
 echo "Please enter your password if requested."
 
@@ -20,9 +24,9 @@ then
     # iterate over the line numbers on which matches were found
     while read -r line_number; do
         # replace the text of each line with the desired host entry
-        sudo sed -i '' "${line_number}s/.*/${host_entry} /" /etc/hosts
+        sudo sed "${line_number} s/.*/${host_entry} /" $host_file
     done <<< "$matches_in_hosts"
 else
     echo "Adding new hosts entry."
-    echo "$host_entry" | sudo tee -a /etc/hosts > /dev/null
+    echo "$host_entry" | sudo tee -a $host_file > /dev/null
 fi
