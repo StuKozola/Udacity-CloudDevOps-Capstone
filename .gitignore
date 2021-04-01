@@ -11,3 +11,4 @@ venv/
 .env
 .devcontainer/
 mlruns/
+docker-compose.yaml

@@ -68,20 +68,21 @@ install-minikube:
 	minikube delete
 
 install-anchore:
-	# docker compose
-	sudo curl -L "https://github.com/docker/compose/releases/download/1.28.6/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-	sudo chmod +x /usr/local/bin/docker-compose
 	# anchore engine
-	curl https://engine.anchore.io/docs/quicstart/docker-compose.yaml > docker-compose.yaml
-	docker-compose up -d
+	curl -LO https://engine.anchore.io/docs/quickstart/docker-compose.yaml
 	# anchore cli
 	sudo apt-get update
 	sudo apt-get install python3-pip
 	sudo pip3 install anchorecli
 	export PATH="$$HOME/.local/bin/:$$PATH"
-	echo "ANCHORE_CLI_URL='https://localhost:8228/v1'" >anchore.env;\
-	echo "ANCHORE_CLI_USER='admin'" >> anchore.env;\
-	echo "ANCHORE_CLI_PASS='anchoreadmin'" >> anchore.env;\
+	# requires docker-compose
+	sudo pip3 install docker-compose
+	docker-compose up -d
+	docker-compose ps
+	docker-compose exec api anchore-cli system status
+	docker-compose exec api anchore-cli system feeds list
+	# wait for vulnerabilities to be ready
+	docker-compose exec api anchore-cli system wait
 
 ### buld and test
 lint:
@@ -108,11 +109,12 @@ build-image:
 	sudo docker image ls
 
 scan:
-	# scan docker image for vulnerabilities
-	if [ -f anchore.env ]; then \
-		export $$(grep -v '^#' anchore.env | xargs); \
-	fi; \
-	anchore-cli image add ${MLFLOW_SERVER} 
+	docker compose exec api anchore-cli image add ${MLFLOW_SERVER}
+	docker compose exec api anchore-cli image wait ${MLFLOW_SERVER}
+	docker compose exec api anchore-cli image content ${MLFLOW_SERVER} os
+	docker compose exec api anchore-cli image vuln ${MLFLOW_SERVER} all
+	docker compose exec api anchore-cli evaluate check ${MLFLOW_SERVER}
+
 
 ### Deployment of artifacts
 upload-image:
@@ -162,6 +164,8 @@ clean:
 	if [ -f "minikube-linux-amd64" ]; then rm -f minikube-linux-amd64; fi;
 	if [ -f "kubectl" ]; then rm -f kubectl; fi;
 	if [ -f ".env" ]; then rm -f .env; fi;
+	if [ -f "anchore.env" ]; then rm -f anchore.env; fi;
+	if [ -f "docker-compose.yaml" ]; then rm -f docker-compose.yaml; fi;
 
 destroy:
 	minikube stop
