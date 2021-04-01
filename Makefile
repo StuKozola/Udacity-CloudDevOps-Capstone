@@ -25,6 +25,13 @@ setup-env:
 	# source the evinronment: source ~/.devops/bin/activate
 	python3 -m venv ~/.devops
 
+set-dev-env:
+	# set dev environment variables for local minikube testing
+	echo  "MLFLOW_TRACKING_URI='http://mlflow-server.local'" > .env; \
+	echo  "MLFLOW_S3_ENDPOINT_URL='http://mlflow-minio.local'" >> .env; \
+	echo  "AWS_ACCESS_KEY_ID='minio'" >> .env; \
+	echo  "AWS_SECRET_ACCESS_KEY='minio123'" >> .env; \
+
 install-env:
 	# install requirements inside the virtual env for running mlflow locally
 	. ~/.devops/bin/activate; \
@@ -59,18 +66,19 @@ install-minikube:
 	sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 	minikube config set driver docker
 	minikube delete
-	minikube start
-	kubectl get po -A
-	minikube addons enable ingress
-	minikube ip
 
 install-anchore:
+	# anchore engine
+	curl https://engine.anchore.io/docs/quicstart/docker-compose.yaml > docker-compose.yaml
+	docker-compose up -d
+	# anchore cli
 	sudo apt-get update
 	sudo apt-get install python3-pip
-	sudo pip install anchorecli
-	sudo export PATH="$$HOME/.local/bin/:$$PATH"
-
-
+	sudo pip3 install anchorecli
+	export PATH="$$HOME/.local/bin/:$$PATH"
+	echo "ANCHORE_CLI_URL='https://localhost:8228/v1'" >anchore.env;\
+	echo "ANCHORE_CLI_USER='admin'" >> anchore.env;\
+	echo "ANCHORE_CLI_PASS='anchoreadmin'" >> anchore.env;\
 
 ### buld and test
 lint:
@@ -81,6 +89,9 @@ lint:
 test-models:
 	# train the model with four trial runs
 	. ~/.devops/bin/activate; \
+	if [ -f .env ]; then \
+		export $$(grep -v '^#' .env | xargs); \
+	fi; \
 	python model/train.py 1 1; \
 	python model/train.py 1 0.5; \
 	python model/train.py 0.5 1; \
@@ -95,11 +106,14 @@ build-image:
 
 scan:
 	# scan docker image for vulnerabilities
-	docker scan ${MLFLOW_SERVER} 
+	if [ -f anchore.env ]; then \
+		export $$(grep -v '^#' anchore.env | xargs); \
+	fi; \
+	anchore-cli image add ${MLFLOW_SERVER} 
 
 ### Deployment of artifacts
 upload-image:
-	# Upload docker image to repository
+	# Upload docker image to repositoryM1
 	export DOCKERPATH=$(DOCKERPATH); \
 	echo "Docker ID and Image: $(DOCKERPATH)"; \
 	sudo docker login; \
@@ -122,6 +136,10 @@ run-repo:
 	sudo sudo docker run -p 5000:5000 ${DOCKERPATH}
 
 run-local-k8:
+	minikube start
+	kubectl get po -A
+	minikube addons enable ingress
+	minikube ip
 	# run local minikube configuration
 	kubectl create -f k8/postgres.yml
 	kubectl create -f k8/minio.yml
@@ -133,13 +151,14 @@ install-local: setup-env install-env
 build-local: test-models
 
 ### local with minikube and docker
-install-local-k8: setup-env install-env install-hadolint install-docker install-minikube
-build-local-k8: lint test-models
+install-local-k8: setup-env set-dev-env install-env install-hadolint install-docker install-anchore install-minikube
+build-local-k8: lint build-img scan upload-img
 
 clean:
 	if [ -d "mlruns" ]; then rm -r mlruns; fi;
 	if [ -f "minikube-linux-amd64" ]; then rm -f minikube-linux-amd64; fi;
 	if [ -f "kubectl" ]; then rm -f kubectl; fi;
+	if [ -f ".env" ]; then rm -f .env; fi;
 
 destroy:
 	minikube stop
