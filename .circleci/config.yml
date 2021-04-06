@@ -24,7 +24,6 @@ jobs:
             apt -y install wget
             apt -y install make
             apt -y install python3-venv
-            make install
       
       - run:
           name: Setup python environment
