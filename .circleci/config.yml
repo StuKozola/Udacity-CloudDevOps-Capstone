@@ -17,11 +17,11 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apt update
-            apt upgrade
-            apt install git
-            apt install make
-            apt install python3-venv
+            apt -y update
+            apt -y upgrade
+            apt -y install git
+            apt -y install make
+            apt -y install python3-venv
             make install
       
       # run lint!
