@@ -13,7 +13,6 @@ jobs:
     steps:
       - checkout
 
-      # Download and install dependencies
       - run:
           name: Install dependencies
           command: |
@@ -27,13 +26,27 @@ jobs:
             apt -y install python3-venv
             make install
       
-      # run lint!
+      - run:
+          name: Setup python environment
+          command: |
+            make setup-env
+            make install-env
+      
+      - run:
+          name: Install Hadolint
+          command: |
+            make install-hadolint
+
+      - run:
+          name: Install Docker
+          command: |
+            make install-docker
+      
       - run:
           name: Linting Dockerfile
           command: |
             make lint
 
-      # build mlflow container
       - run:
           name: Building MLFLOW container
           command: |

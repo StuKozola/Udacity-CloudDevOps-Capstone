@@ -17,11 +17,11 @@ DEV_MINIO=mlflow-minio.local
 ### Setup an installation
 setup-ubuntu:
 	# install dependecies for ubuntu
-	sudo apt update
-	sudo apt upgrade
-	sudo apt install git
-	sudo apt install make
-	sudo apt install python3-venv
+	sudo apt -y update
+	sudo apt -y upgrade
+	sudo apt -y install git
+	sudo apt -y install make
+	sudo apt -y install python3-venv
 
 setup-env:
 	# create a python virtual environment
@@ -52,13 +52,13 @@ install-hadolint:
 
 install-docker:
 	# install docker
-	sudo apt update
-	sudo apt install apt-transport-https ca-certificates curl software-properties-common
+	sudo apt -y update
+	sudo apt -y install apt-transport-https ca-certificates curl software-properties-common
 	curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 	sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
-	sudo apt update
+	sudo apt -y update
 	apt-cache policy docker-ce
-	sudo apt install docker-ce
+	sudo apt -y install docker-ce
 	sudo groupadd -f docker
 	sudo usermod -aG docker $$USER
 	sudo systemctl status docker &
