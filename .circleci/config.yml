@@ -23,29 +23,28 @@ jobs:
             apt -y install git
             apt -y install wget
             apt -y install make
-            apt -y install gnupg
             apt -y install python3-venv
-      
-      - run:
-          name: Setup python environment
-          command: |
-            make setup-env
-            make install-env
-
-      - run:
-          name: Install Docker
-          command: |
-            make install-docker
-      
+           
       - run:
           name: Install Hadolint
-          command: |
-            make install-hadolint
+          command: make install-hadolint
       
+      - run:
+          name: Install Docker client
+          command: apt -y install docker-cli
+           
       - run:
           name: Linting Dockerfile
           command: |
             make lint
+      
+      - setup_remote_docker:
+          version: 20.10.2
+          docker_layer_caching: true
+
+      - run:
+          name: Build Image
+          command: make build-img
 
       - run:
           name: Building MLFLOW container
