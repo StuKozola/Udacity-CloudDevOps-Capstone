@@ -1,0 +1,49 @@
+# Configuration file for MLFLOW Deployment to AWS K8s
+version: 2.1
+orbs:
+    anchore-engine: anchore/anchore-engine:@1.0.0
+jobs:
+  build_and_scan:
+    docker:
+      # Use the same Docker base as the project
+      - image: python:3.8.2-slim
+
+    working_directory: ~/repo
+    executor: anchore/anchore_engine
+
+    steps:
+      - checkout
+
+      # Download and install dependencies
+      - run:
+          name: Install dependencies
+          command: |
+            make install
+      
+      # run lint!
+      - run:
+          name: Linting Dockerfile
+          command: |
+            make lint
+
+      # build mlflow container
+      - run:
+          name: Building MLFLOW container
+          command: |
+            make build-img
+      
+      # scan image for vulnerabilities
+      - anchore/analyze_local_image:
+          image_name: ${CIRCLE_PROJECT_REPONAME}:ci
+          timeout: '500'
+          analysis_fail: True
+
+      # push container to docker hub repository
+      - run:
+          name: Publishing MLFLOW Container
+          command: |
+            make upload-img
+
+
+      
+      
