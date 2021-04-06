@@ -30,16 +30,16 @@ jobs:
           command: |
             make setup-env
             make install-env
-      
-      - run:
-          name: Install Hadolint
-          command: |
-            make install-hadolint
 
       - run:
           name: Install Docker
           command: |
             make install-docker
+      
+      - run:
+          name: Install Hadolint
+          command: |
+            make install-hadolint
       
       - run:
           name: Linting Dockerfile
