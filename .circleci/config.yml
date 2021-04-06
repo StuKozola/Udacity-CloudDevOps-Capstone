@@ -1,7 +1,7 @@
 # Configuration file for MLFLOW Deployment to AWS K8s
 version: 2.1
 orbs:
-    anchore-engine: anchore/anchore-engine:@1.0.0
+    anchore-engine: anchore/anchore-engine@1.0.0
 jobs:
   build_and_scan:
     docker:
