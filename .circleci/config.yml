@@ -45,7 +45,9 @@ jobs:
             make upload-img
 
 workflows:
-  - build_and_scan
+  default:
+    jobs:
+      - build_and_scan
 
 
       
