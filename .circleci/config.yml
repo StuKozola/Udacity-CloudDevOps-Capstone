@@ -31,7 +31,7 @@ jobs:
       
       - run:
           name: Install Docker client
-          command: apt -y install docker-cli
+          command: apt -y install docker-ce-cli
            
       - run:
           name: Linting Dockerfile
