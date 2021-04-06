@@ -23,6 +23,7 @@ jobs:
             apt -y install git
             apt -y install wget
             apt -y install make
+            apt -y install gnupg
             apt -y install python3-venv
       
       - run:

@@ -21,7 +21,6 @@ setup-ubuntu:
 	sudo apt -y upgrade
 	sudo apt -y install git
 	sudo apt -y install make
-	sudo apt -y install gnupg
 	sudo apt -y install python3-venv
 
 setup-env:
