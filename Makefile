@@ -166,6 +166,9 @@ build-local: test-models
 install-local-k8: setup-env set-dev-env install-env install-hadolint install-docker install-anchore install-minikube
 build-local-k8: lint build-img scan upload-img
 
+### install for docker build only
+install: setup-env install-env install-hadolint install-docker
+
 clean:
 	if [ -d "mlruns" ]; then rm -r mlruns; fi;
 	if [ -f "minikube-linux-amd64" ]; then rm -f minikube-linux-amd64; fi;
