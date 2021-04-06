@@ -1,7 +1,7 @@
 # Configuration file for MLFLOW Deployment to AWS K8s
 version: 2.1
-orbs:
-    anchore-engine: anchore/anchore-engine@1.8.6
+#orbs:
+#    anchore-engine: anchore/anchore-engine@1.8.6
 jobs:
   build-and-scan:
     docker:
@@ -33,10 +33,10 @@ jobs:
             make build-img
       
       # scan image for vulnerabilities
-      - anchore/analyze_local_image:
-          image_name: ${CIRCLE_PROJECT_REPONAME}:ci
-          timeout: '500'
-          analysis_fail: True
+#      - anchore/analyze_local_image:
+#          image_name: ${CIRCLE_PROJECT_REPONAME}:ci
+#          timeout: '500'
+#          analysis_fail: True
 
       # push container to docker hub repository
       - run:
