@@ -3,7 +3,7 @@ version: 2.1
 orbs:
     anchore-engine: anchore/anchore-engine@1.8.6
 jobs:
-  build_and_scan:
+  build:
     docker:
       # Use the same Docker base as the project
       - image: python:3.8.2-slim
