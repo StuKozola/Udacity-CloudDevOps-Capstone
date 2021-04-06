@@ -5,11 +5,10 @@ version: 2.1
 jobs:
   build-and-scan:
     docker:
-      # Use the same Docker base as the project
       - image: python:3.8.2-slim
 
     working_directory: ~/repo
-    executor: anchore/anchore_engine
+    #executor: anchore/anchore_engine
 
     steps:
       - checkout
@@ -50,7 +49,7 @@ jobs:
             make upload-img
 
 workflows:
-  default:
+  build:
     jobs:
       - build-and-scan
 
