@@ -68,9 +68,5 @@ jobs:
 workflows:
   build:
     jobs:
-      - build-and-scan
-        context: CAPSTONE
-
-
-      
-      
+      - build-and-scan:
+          context: CAPSTONE
