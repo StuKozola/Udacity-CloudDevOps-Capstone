@@ -44,7 +44,7 @@ jobs:
 
       - run:
           name: Build Image
-          command: make build-img
+          command: make build-image
 
       - run:
           name: Building MLFLOW container
