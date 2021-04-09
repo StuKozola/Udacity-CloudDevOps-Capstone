@@ -8,8 +8,6 @@ jobs:
       - image: python:3.8.2-slim
     executor: anchore/anchore_engine
     working_directory: ~/repo
-    #executor: anchore/anchore_engine
-
     steps:
       - checkout
 
@@ -23,7 +21,6 @@ jobs:
             apt -y install git
             apt -y install wget
             apt -y install make
-            apt -y install python3-venv
            
       - run:
           name: Install Hadolint
@@ -66,8 +63,61 @@ jobs:
             docker image tag mlflow_server $DOCKER_USER/mlflow_server
             docker push $DOCKER_USER/mlflow_server
 
+  test:
+    docker:
+      - image: python:3.8.2-slim
+    working_directory: ~/repo
+    - checkout
+
+      - run:
+          name: Install dependencies
+          command: |
+            apt -y update
+            apt -y upgrade
+            apt -y install sudo
+            ls -al /bin/sh && sudo rm /bin/sh && sudo ln -s /bin/bash /bin/sh && ls -al /bin/sh
+            apt -y install git
+            apt -y install wget
+            apt -y install make
+            apt -y install python3-venv
+      
+      - run:
+          name: Install Docker client
+          command: make install-docker-cli
+      
+      - setup_remote_docker:
+          version: 20.10.2
+          docker_layer_caching: true
+
+      - run:
+          name: Setup python environment and install mlflow client
+         command: |
+            make setup-env
+            make install-env
+      
+      - run: 
+          name: Download image check that is it running
+          command: |
+            docker pull $DOCKER_USER/mlflow_server
+	          docker run -p 5000:5000 $DOCKER_USER/mlflow_server
+            docker exec my-app curl --retry 10 --retry-connrefused http://localhost:5000
+      
+      - run:
+          name: Add experiments to repository
+          command: |
+            set TRACKING_HOST=http://localhost:5000
+            make test-models
+
+      - run:
+          name: Verify models were added
+      
+
+
+
 workflows:
   build:
     jobs:
       - build-and-scan:
+          context: CAPSTONE
+      - test:
           context: CAPSTONE
