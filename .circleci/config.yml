@@ -50,6 +50,7 @@ jobs:
       
       - anchore/analyze_local_image:
           image_name: 'mlflow_server:latest'
+          policy_failure: false
           timeout: '500'
 
       - anchore/parse_reports
@@ -61,12 +62,14 @@ jobs:
       - run:
           name: Publishing MLFLOW Container
           command: |
-            make upload-img
+          echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+          docker push $DOCKER_REPO/mlflow_server:latest
 
 workflows:
   build:
     jobs:
       - build-and-scan
+        context: CAPSTONE
 
 
       
