@@ -100,7 +100,7 @@ jobs:
           name: Download image check that is it running
           command: |
             docker pull $DOCKER_USER/mlflow_server
-            docker run -p 5000:5000 -d $DOCKER_USER/mlflow_server
+            docker run -p 5000:5000 $DOCKER_USER/mlflow_server &&
             docker exec $DOCKER_USER/mlflow_server curl --retry 10 --retry-connrefused http://localhost:5000
       
       - run:
