@@ -92,7 +92,7 @@ jobs:
 
       - run:
           name: Setup python environment and install mlflow client
-         command: |
+          command: |
             make setup-env
             make install-env
       
@@ -100,7 +100,7 @@ jobs:
           name: Download image check that is it running
           command: |
             docker pull $DOCKER_USER/mlflow_server
-	          docker run -p 5000:5000 $DOCKER_USER/mlflow_server
+            docker run -p 5000:5000 $DOCKER_USER/mlflow_server
             docker exec my-app curl --retry 10 --retry-connrefused http://localhost:5000
       
       - run:
@@ -111,10 +111,8 @@ jobs:
 
       - run:
           name: Verify models were added
+          command: echo "ADD TEST HERE"
       
-
-
-
 workflows:
   build:
     jobs:
