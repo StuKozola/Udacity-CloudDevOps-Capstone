@@ -62,8 +62,8 @@ jobs:
       - run:
           name: Publishing MLFLOW Container
           command: |
-          echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-          docker push $DOCKER_REPO/mlflow_server:latest
+            echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+            docker push mlflow_server:latest
 
 workflows:
   build:
