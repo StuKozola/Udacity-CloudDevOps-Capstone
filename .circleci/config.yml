@@ -99,8 +99,8 @@ jobs:
           name: Download image and check that is it running
           command: |
             docker pull $DOCKER_USER/mlflow_server
-            docker run -p 5000:5000 $DOCKER_USER/mlflow_server &&
-            docker exec $DOCKER_USER/mlflow_server curl --retry 10 --retry-connrefused http://localhost:5000
+            docker run -p 5000:5000 --name test_server $DOCKER_USER/mlflow_server &&
+            docker exec test_server --retry 10 --retry-connrefused http://localhost:5000
       
       - run:
           name: Add experiments to repository
