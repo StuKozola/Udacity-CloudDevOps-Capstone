@@ -67,7 +67,8 @@ jobs:
     docker:
       - image: python:3.8.2-slim
     working_directory: ~/repo
-    - checkout
+    jobs:
+      - checkout
 
       - run:
           name: Install dependencies
