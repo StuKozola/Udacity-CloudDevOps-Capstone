@@ -55,7 +55,6 @@ jobs:
       - store_artifacts:
           path: anchore-reports
       
-      # push container to docker hub repository
       - run:
           name: Publishing MLFLOW Container
           command: |
@@ -97,7 +96,7 @@ jobs:
             make install-env
       
       - run: 
-          name: Download image check that is it running
+          name: Download image and check that is it running
           command: |
             docker pull $DOCKER_USER/mlflow_server
             docker run -p 5000:5000 -d $DOCKER_USER/mlflow_server
@@ -114,7 +113,7 @@ jobs:
           command: echo "ADD TEST HERE"
       
 workflows:
-  build:
+  MLFlow-AWS:
     jobs:
       - build-and-scan:
           context: CAPSTONE
