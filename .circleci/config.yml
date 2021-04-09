@@ -50,8 +50,6 @@ jobs:
       
       - anchore/analyze_local_image:
           image_name: 'mlflow_server:latest'
-          policy_bundle_file_path: .circleci/.anchore/policy_bundle.json
-          policy_failure: true
           timeout: '500'
 
       - anchore/parse_reports
