@@ -44,12 +44,7 @@ jobs:
 
       - run:
           name: Build Image
-          command: make build-image
-
-      - run:
-          name: Building MLFLOW container
-          command: |
-            make build-img
+          command: docker build --tag="MLFLOW-Server"
       
       # scan image for vulnerabilities
 #      - anchore/analyze_local_image:
