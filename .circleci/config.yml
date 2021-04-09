@@ -67,7 +67,7 @@ jobs:
     docker:
       - image: python:3.8.2-slim
     working_directory: ~/repo
-    jobs:
+    steps:
       - checkout
 
       - run:
