@@ -44,7 +44,7 @@ jobs:
 
       - run:
           name: Build Image
-          command: docker build -t mlflow-server
+          command: docker build -t mlflow-server .
       
       # scan image for vulnerabilities
 #      - anchore/analyze_local_image:
