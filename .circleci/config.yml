@@ -77,6 +77,7 @@ jobs:
             apt -y install sudo
             ls -al /bin/sh && sudo rm /bin/sh && sudo ln -s /bin/bash /bin/sh && ls -al /bin/sh
             apt -y install git
+            apty -y install curl
             apt -y install wget
             apt -y install make
             apt -y install python3-venv
