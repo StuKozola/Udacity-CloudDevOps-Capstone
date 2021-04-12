@@ -100,11 +100,11 @@ jobs:
           command: |
             docker pull $DOCKER_USER/mlflow_server
             docker run -p 5000:5000 -d --name test_server $DOCKER_USER/mlflow_server --host 0.0.0.0
-            if [ (curl -s -o /dev/null -w "%{http_code}" http://localhost:5000) == 200] then
+            if [ `curl -s -o /dev/null -w "%{http_code}" http://localhost:5000` == 200] then
               return 1
             else
               return 0
-            if 
+            fi
 
       - run:
           name: Add experiments to repository
