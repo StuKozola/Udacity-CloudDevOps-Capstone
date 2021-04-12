@@ -104,7 +104,8 @@ jobs:
             then
               echo "Successfully connected to running docker image"
             else
-              circleci-agent step halt
+              #circleci-agent step halt
+              echo "failure"
             fi
 
       - run:
