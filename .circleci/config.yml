@@ -70,17 +70,7 @@ jobs:
     working_directory: ~/repo
     steps:
       - checkout
-
-      - run:
-          name: Install dependencies
-          command: |
-            sudo apt -y update
-            sudo apt -y upgrade
-            # sudo apt -y install curl
-            # sudo apt -y install wget
-            # sudo apt -y install make
-            sudo apt -y install python3-venv --fix-missing
-      
+     
       # - run:
       #     name: Install Docker client
       #     command: make install-docker-cli
@@ -102,6 +92,16 @@ jobs:
               #circleci-agent step halt
               echo "failure"
             fi
+
+      # - run:
+      #     name: Install dependencies
+      #     command: |
+      #       sudo apt -y update
+      #       sudo apt -y upgrade
+      #       # sudo apt -y install curl
+      #       # sudo apt -y install wget
+      #       # sudo apt -y install make
+      #       sudo apt -y install python3-venv --fix-missing
 
       - run:
           name: Setup python environment and install mlflow client
