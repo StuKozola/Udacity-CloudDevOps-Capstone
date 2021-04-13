@@ -99,7 +99,7 @@ jobs:
               )
             echo "Experiment ID: $EXP_ID"
             # retrieve experiment to verify
-            curl -H "Content-Type:application/json" -X GET --data '{"experiment_id": "$EXP_ID" }' ${base_url}/get
+            curl -H "Content-Type:application/json" -X GET --data '{"experiment_id": $EXP_ID }' ${base_url}/get
 
 workflows:
   MLFlow-AWS:
