@@ -106,6 +106,7 @@ jobs:
               echo "Successfully added and retrieved experiment"
             else
               echo "failure"
+              echo $EXP_NAME
               exit 1
             fi
 
