@@ -87,8 +87,6 @@ jobs:
       - run:
           name: Add experiments to repository and verify
           command: |
-            # sudo apt update
-            # sudo apt install jq
             base_url=http://localhost:5000/api/2.0/preview/mlflow/experiments
             # list experiments
             curl ${base_url}/list
@@ -101,7 +99,7 @@ jobs:
             curl ${base_url}/list
             # retrieve experiment to verify
             EXP_NAME=$(
-              curl -H "Content-Type:application/json" -X GET --data '{"experiment_id": "'"$EXP_ID"'"' }' ${base_url}/get | jq '.name'
+              curl -H "Content-Type:application/json" -X GET --data '{"experiment_id": "'"$EXP_ID"'" }' ${base_url}/get | jq '.name'
               )
             if [[ "$EXP_NAME" == "test_experiment" ]]
             then
