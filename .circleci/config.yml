@@ -85,7 +85,7 @@ jobs:
             fi
 
       - run:
-          name: Add experiments to repository
+          name: Add experiments to repository and verify
           command: |
             # sudo apt update
             # sudo apt install jq
@@ -98,7 +98,7 @@ jobs:
                 --data '{"name": "test_experiment"}' ${base_url}/create | jq '.experiment_id'
               )
             # retrieve experiment to verify
-            curl -H "Content-Type:application/json" -X GET --data '{"experiment_id": $EXP_ID }' ${base_url}/get
+            curl -H "Content-Type:application/json" -X GET --data '{"experiment_id": "$EXP_ID" }' ${base_url}/get
 
 workflows:
   MLFlow-AWS:
