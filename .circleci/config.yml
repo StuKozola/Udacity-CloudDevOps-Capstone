@@ -64,8 +64,9 @@ jobs:
             docker push $DOCKER_USER/mlflow_server
 
   test:
-    docker:
-      - image: python:3.8.2-slim
+    # docker:
+    #   - image: python:3.8.2-slim
+    machine: true
     working_directory: ~/repo
     steps:
       - checkout
@@ -87,9 +88,9 @@ jobs:
           name: Install Docker client
           command: make install-docker-cli
       
-      - setup_remote_docker:
-          version: 20.10.2
-          docker_layer_caching: true
+      # - setup_remote_docker:
+      #     version: 20.10.2
+      #     docker_layer_caching: true
 
       - run:
           name: Setup python environment and install mlflow client
