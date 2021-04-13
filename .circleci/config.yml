@@ -64,8 +64,9 @@ jobs:
             docker push $DOCKER_USER/mlflow_server
 
   test:
-    docker:
-      - image: python:3.8.2-slim
+    # docker:
+    #   - image: python:3.8.2-slim
+    machine: true
     working_directory: ~/repo
     steps:
       - checkout
@@ -73,44 +74,46 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apt -y update
-            apt -y upgrade
-            apt -y install sudo
-            ls -al /bin/sh && sudo rm /bin/sh && sudo ln -s /bin/bash /bin/sh && ls -al /bin/sh
-            apt -y install git
-            apt -y install curl
-            apt -y install wget
-            apt -y install make
+            sudo apt -y update
+            sudo apt -y upgrade
+            sudo apt -y install curl
+            sudo apt -y install wget
+            sudo apt -y install make
+            sudo apt -y install python3-venv
       
-      - run:
-          name: Install Docker client
-          command: make install-docker-cli
+      # - run:
+      #     name: Install Docker client
+      #     command: make install-docker-cli
       
-      - setup_remote_docker:
-          version: 20.10.2
-          docker_layer_caching: true
-      
+      # - setup_remote_docker:
+      #     version: 20.10.2
+      #     docker_layer_caching: true
       - run: 
           name: Download image and check that is it running
           command: |
             docker pull $DOCKER_USER/mlflow_server
             docker run -p 5000:5000 -d --name test_server $DOCKER_USER/mlflow_server --host 0.0.0.0
             docker container ls
-            docker container port test_server
-            docker run --network container:test_server appropriate/curl --retry 10 --retry-connrefused http://localhost:5000
-            #if [[ docker run --network container:test_server appropriate/curl --retry 10 --retry-connrefused http://localhost:5000 == 200 ]]
-            # if [[ `curl -s -o /dev/null -w "%{http_code}" http://localhost:5000` == 200 ]] 
-            # then
-            #   echo "Successfully connected to running docker image"
-            # else
-            #   #circleci-agent step halt
-            #   echo "failure"
-            # fi
+            curl -s -o /dev/null -w "%{http_code}" --retry 10 --retry-connrefused http://localhost:5000
+            if [[ `curl -s -o /dev/null -w "%{http_code}" http://localhost:5000` == 200 ]] 
+            then
+              echo "Successfully connected to running docker image"
+            else
+              #circleci-agent step halt
+              echo "failure"
+            fi
+
+      - run:
+          name: Setup python environment and install mlflow client
+          command: |
+            make setup-env
+            make install-env
 
       - run:
           name: Add experiments to repository
           command: |
-            echo "TODO"
+            set TRACKING_HOST=http://localhost:5000
+            make test-models
 
       - run:
           name: Verify models were added
