@@ -101,7 +101,7 @@ jobs:
             EXP_NAME=$(
               curl -H "Content-Type:application/json" -X GET --data '{"experiment_id": '"$EXP_ID"' }' ${base_url}/get | jq '.experiment.name'
               )
-            if [[ "$EXP_NAME" == "test_experiment" ]]
+            if [[ "$EXP_NAME" == '"test_experiment"'' ]]
             then
               echo "Successfully added and retrieved experiment"
             else
