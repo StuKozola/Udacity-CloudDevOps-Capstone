@@ -64,20 +64,11 @@ jobs:
             docker push $DOCKER_USER/mlflow_server
 
   test:
-    # docker:
-    #   - image: python:3.8.2-slim
     machine: true
     working_directory: ~/repo
     steps:
       - checkout
      
-      # - run:
-      #     name: Install Docker client
-      #     command: make install-docker-cli
-      
-      # - setup_remote_docker:
-      #     version: 20.10.2
-      #     docker_layer_caching: true
       - run: 
           name: Download image and check that is it running
           command: |
@@ -85,8 +76,6 @@ jobs:
             docker run -p 5000:5000 -d --name test_server $DOCKER_USER/mlflow_server --host 0.0.0.0
             docker container ls
             sleep 10
-            curl http://localhost:5000
-            curl -s -o /dev/null -w "%{http_code}" http://localhost:5000
             if [[ `curl -s -o /dev/null -w "%{http_code}" http://localhost:5000` == 200 ]] 
             then
               echo "Successfully connected to running docker image"
@@ -95,32 +84,22 @@ jobs:
               exit 1
             fi
 
-      # - run:
-      #     name: Install dependencies
-      #     command: |
-      #       sudo apt -y update
-      #       sudo apt -y upgrade
-      #       # sudo apt -y install curl
-      #       # sudo apt -y install wget
-      #       # sudo apt -y install make
-      #       sudo apt -y install python3-venv --fix-missing
-
-      - run:
-          name: Setup python environment and install mlflow client
-          command: |
-            make setup-env
-            make install-env
-
       - run:
           name: Add experiments to repository
           command: |
-            set TRACKING_HOST=http://localhost:5000
-            make test-models
+            # sudo apt update
+            # sudo apt install jq
+            base_url=http://localhost:5000/api/2.0/preview/mlflow/experiments
+            # list experiments
+            curl ${base_url}/list
+            # add experiment
+            EXP_ID=$(
+              curl -H "Content-Type:application/json" -X POST \
+                --data '{"name": "test_experiment"}' ${base_url}/create | jq '.experiment_id'
+              )
+            # retrieve experiment to verify
+            curl -H "Content-Type:application/json" -X GET --data '{"experiment_id": $EXP_ID }' ${base_url}/get
 
-      - run:
-          name: Verify models were added
-          command: echo "ADD TEST HERE"
-      
 workflows:
   MLFlow-AWS:
     jobs:
