@@ -121,6 +121,8 @@ jobs:
           name: Install dependencies
           command: |
             yum -y install tar gzip jq git
+            yum -y install sudo
+            ls -al /bin/sh && sudo rm /bin/sh && sudo ln -s /bin/bash /bin/sh && ls -al /bin/sh
       - run:
           name: Install kubectl
           command: |
@@ -148,10 +150,10 @@ jobs:
           command: |
             eksctl create cluster \
               --name "mlflow-eks-cluster-${CIRCLE_WORKFLOW_ID:0:7}" \
-              --region us-west-2 \
+              --region ${AWS_DEFAULT_REGION} \
               --with-oidc \
               --ssh-access \
-              --ssh-public-key <your-key> \
+              --ssh-public-key ${AWS_EC2_KEY_NAME} \
               --managed
             
 
