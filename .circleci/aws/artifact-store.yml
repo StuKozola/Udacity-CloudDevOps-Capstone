@@ -1,0 +1,48 @@
+# Deployment command
+#  aws cloudformation deploy \
+#  --template-file .circleci/aws/artifact-store.yml \
+#  --tags project=mlflow \
+#  --stack-name "mlflow-s3"
+#  --parameter-overrides WorkflowID="34nanisdf9234k23"
+
+Description: >
+  MLFLow artifactory store in S3.
+
+Parameters:
+  WorkflowID:
+    Description: Unique identifier.
+    Type: String
+
+Resources:
+  ArtifactBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "mlflow-${WorkflowID}"
+      AccessControl: Private
+  
+  ArtifactBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref ArtifactBucket
+      PolicyDocument:
+        Id: MLFlowPolicy
+        Version: 2012-10-17
+        Statement:
+          - Sid: MLFlowBucketAccessPolicy
+            Effect: Allow
+            Principal: '*'
+            Action: 
+              - s3:ListBucket
+              - s3:GetObject
+              - s3:PutObject
+              - s3:GetBucketLocation
+            Resource: 
+              - !Join ['', ['arn:aws:s3:::', !Ref ArtifactBucket, /*]]
+              - !Join ['', ['arn:aws:s3:::', !Ref ArtifactBucket ]]
+
+Outputs:
+  ArtifactURL:
+    Value: !GetAtt
+      - ArtifactBucket
+      - WebsiteURL
+    Description: URL for Artifacts hosted on S3

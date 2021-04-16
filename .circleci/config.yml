@@ -3,11 +3,12 @@ version: 2.1
 orbs:
   anchore: anchore/anchore-engine@1.8.6
 jobs:
-  build-and-scan:
+  build-server:
     docker:
       - image: python:3.8.2-slim
     executor: anchore/anchore_engine
     working_directory: ~/repo
+    
     steps:
       - checkout
 
@@ -63,7 +64,7 @@ jobs:
             docker image tag mlflow_server $DOCKER_USER/mlflow_server
             docker push $DOCKER_USER/mlflow_server
 
-  test:
+  test-server:
     machine: true
     working_directory: ~/repo
     steps:
@@ -72,6 +73,7 @@ jobs:
       - run: 
           name: Download image and check that is it running
           command: |
+            circleci-agent step halt
             docker pull $DOCKER_USER/mlflow_server
             docker run -p 5000:5000 -d --name test_server $DOCKER_USER/mlflow_server --host 0.0.0.0
             docker container ls
@@ -109,11 +111,70 @@ jobs:
               echo $EXP_NAME
               exit 1
             fi
+  
+  deploy-infrastructure:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            yum -y install tar gzip jq git
+      - run:
+          name: Install kubectl
+          command: |
+            curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.19.6/2021-01-05/bin/linux/amd64/kubectl
+            chmod +x ./kubectl
+            mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin
+            echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
+            kubectl version --short --client
+      - run:
+          name: Install eksctl
+          command: |
+            curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+            sudo mv /tmp/eksctl /usr/local/bin
+            eksctl version
+      - run:
+          name: Ensure artifact repository exists (S3 bucket)
+          command: |
+            aws cloudformation deploy \
+              --template-file .circleci/aws/artifact-store.yml \
+              --tags project=mlflow \
+              --stack-name "mlflow-artifacts-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7}
+      - run:
+          name: Create K8 Infrastructure on AWS
+          command: |
+            eksctl create cluster \
+              --name "mlflow-eks-cluster-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --region us-west-2 \
+              --with-oidc \
+              --ssh-access \
+              --ssh-public-key <your-key> \
+              --managed
+            
 
 workflows:
   MLFlow-AWS:
     jobs:
-      - build-and-scan:
+      - build-server:
           context: CAPSTONE
-      - test:
+      - test-server:
           context: CAPSTONE
+          requires: [build-server]
+      - deploy-infrastructure:
+          context: CAPSTONE
+          requires: [test-server]
+      # - configure-infrastructure:
+      #     context: CAPSTONE
+      #     requires: [deploy-infrastructure]
+      # - smoke-test:
+      #     context: mlflow
+      #     requires: [deploy-backend, deploy-frontend]
+      # - cloudfront-update:
+      #     context: mlflow
+      #     requires: [smoke-test]
+      # - cleanup:
+      #     context: mlflow
+      #     requires: [cloudfront-update]
