@@ -14,6 +14,36 @@ commands:
             aws s3 rm --recursive s3://mlflow-${CIRCLE_WORKFLOW_ID:0:7}
             aws cloudformation delete-stack --stack-name mlflow-artifacts-${CIRCLE_WORKFLOW_ID:0:7}
             eksctl delete cluster --name mlflow-eks-${CIRCLE_WORKFLOW_ID:0:7} --region ${AWS_DEFAULT_REGION}
+
+  test-add-experiments:
+    description:  Test MLFlow tracking server by adding experiments and verifying added
+    steps:
+    - run:
+        name: Add experiments to repository and verify
+        command: |
+          base_url=http://localhost:5000/api/2.0/preview/mlflow/experiments
+          # list experiments
+          curl ${base_url}/list
+          # add experiment
+          EXP_ID=$(
+            curl -H "Content-Type:application/json" -X POST \
+              --data '{"name": "test_experiment"}' ${base_url}/create | jq '.experiment_id'
+            )
+            echo "Experiment ID: $EXP_ID"
+            curl ${base_url}/list
+            # retrieve experiment to verify
+            EXP_NAME=$(
+              curl -H "Content-Type:application/json" -X GET --data '{"experiment_id": '"$EXP_ID"' }' ${base_url}/get | jq '.experiment.name'
+            )
+            if [[ "$EXP_NAME" == '"test_experiment"' ]]
+            then
+              echo "Successfully added and retrieved experiment"
+            else
+              echo "failure"
+              echo $EXP_NAME
+              exit 1
+            fi
+
 jobs:
   build-server:
     docker:
@@ -98,31 +128,7 @@ jobs:
               exit 1
             fi
 
-      - run:
-          name: Add experiments to repository and verify
-          command: |
-            base_url=http://localhost:5000/api/2.0/preview/mlflow/experiments
-            # list experiments
-            curl ${base_url}/list
-            # add experiment
-            EXP_ID=$(
-              curl -H "Content-Type:application/json" -X POST \
-                --data '{"name": "test_experiment"}' ${base_url}/create | jq '.experiment_id'
-              )
-            echo "Experiment ID: $EXP_ID"
-            curl ${base_url}/list
-            # retrieve experiment to verify
-            EXP_NAME=$(
-              curl -H "Content-Type:application/json" -X GET --data '{"experiment_id": '"$EXP_ID"' }' ${base_url}/get | jq '.experiment.name'
-              )
-            if [[ "$EXP_NAME" == '"test_experiment"' ]]
-            then
-              echo "Successfully added and retrieved experiment"
-            else
-              echo "failure"
-              echo $EXP_NAME
-              exit 1
-            fi
+      - test-add-experiments
   
   deploy-infrastructure:
     docker:

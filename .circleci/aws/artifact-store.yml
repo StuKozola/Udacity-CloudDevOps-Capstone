@@ -47,6 +47,5 @@ Outputs:
       - WebsiteURL
     Description: URL for Artifacts hosted on S3
     Export:
-      Name: !GetAtt
-        - ArtifactBucket
-        - WebsiteURL
+      Name: 
+        Fn::Sub: "${AWS::StackName}-ArtifactUrl"
