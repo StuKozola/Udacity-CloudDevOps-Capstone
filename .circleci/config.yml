@@ -144,7 +144,7 @@ jobs:
               --template-file .circleci/aws/artifact-store.yml \
               --tags project=mlflow \
               --stack-name "mlflow-artifacts-${CIRCLE_WORKFLOW_ID:0:7}" \
-              --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7}
+              --parameter-overrides WorkflowID=${CIRCLE_WORKFLOW_ID:0:7}
       - run:
           name: Create K8 Infrastructure on AWS
           command: |
