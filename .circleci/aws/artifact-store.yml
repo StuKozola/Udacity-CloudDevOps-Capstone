@@ -46,3 +46,7 @@ Outputs:
       - ArtifactBucket
       - WebsiteURL
     Description: URL for Artifacts hosted on S3
+    Export:
+      Name: !GetAtt
+        - ArtifactBucket
+        - WebsiteURL
