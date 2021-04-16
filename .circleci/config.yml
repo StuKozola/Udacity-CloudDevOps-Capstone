@@ -156,7 +156,7 @@ jobs:
             chmod +x ./kubectl
             mkdir -p $HOME/bin && mv ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin
             echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
-            sudo source ~/.bashrc
+            source ~/.bashrc
             kubectl version --short --client
       
       - run:
