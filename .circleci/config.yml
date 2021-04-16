@@ -155,7 +155,15 @@ jobs:
               --ssh-access \
               --ssh-public-key ${AWS_EC2_KEY_NAME} \
               --managed
-            
+      - run:
+          name: Create PostgreSQL service
+          command: |
+            todo
+      
+      -run:
+          name: Create MLFlow service
+          command: |
+            todo           
 
 workflows:
   MLFlow-AWS:
