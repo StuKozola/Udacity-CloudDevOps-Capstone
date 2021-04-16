@@ -160,7 +160,7 @@ jobs:
           command: |
             todo
       
-      -run:
+      - run:
           name: Create MLFlow service
           command: |
             todo           
