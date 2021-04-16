@@ -175,8 +175,8 @@ jobs:
             kubectl create -f k8/minio.yml
             kubectl create -f k8/mlflow-server.yml
             kubectl get services
-      
-      - destroy-environment       
+
+      - destroy-environment         
 
 workflows:
   MLFlow-AWS:
