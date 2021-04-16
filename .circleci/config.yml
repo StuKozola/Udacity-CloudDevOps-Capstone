@@ -2,6 +2,18 @@
 version: 2.1
 orbs:
   anchore: anchore/anchore-engine@1.8.6
+
+commands:
+  destroy-environment:
+    description: Destroy s3 bucket and EKS infrastructure for current workflow
+    steps:
+      - run:
+          name: Destroy environments
+          when: on_fail
+          command: |
+            aws s3 rm --recursive s3://mlflow-artifacts-${CIRCLE_WORKFLOW_ID:0:7}
+            aws cloudformation delete-stack --stack-name mlflow-artifacts-${CIRCLE_WORKFLOW_ID:0:7}
+            eksctl delete cluster --name mlflow-eks-${CIRCLE_WORKFLOW_ID:0:7} --region ${AWS_DEFAULT_REGION}
 jobs:
   build-server:
     docker:
@@ -149,21 +161,22 @@ jobs:
           name: Create K8 Infrastructure on AWS
           command: |
             eksctl create cluster \
-              --name "mlflow-eks-cluster-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --name "mlflow-eks-${CIRCLE_WORKFLOW_ID:0:7}" \
               --region ${AWS_DEFAULT_REGION} \
               --with-oidc \
               --ssh-access \
               --ssh-public-key ${AWS_EC2_KEY_NAME} \
               --managed
       - run:
-          name: Create PostgreSQL service
+          name: Create PostgreSQL, MINIO, and MLFlow Services
           command: |
-            todo
+            kubectl get po -A
+            kubectl create -f k8/postgres.yml
+            kubectl create -f k8/minio.yml
+            kubectl create -f k8/mlflow-server.yml
+            kubectl get services
       
-      -run:
-          name: Create MLFlow service
-          command: |
-            todo           
+      - destroy-environment       
 
 workflows:
   MLFlow-AWS:
