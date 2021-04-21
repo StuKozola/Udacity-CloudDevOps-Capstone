@@ -176,9 +176,10 @@ jobs:
       - run:
           name: Create PostgreSQL, and MLFlow Services
           command: |
+            kubectl version --short --client
             kubectl get po -A
             kubectl create -f k8/postgres.yml
-            kubectl crate -f k8/minio.yml
+            kubectl create -f k8/minio.yml
             kubectl create -f k8/mlflow-server.yml
             kubectl get services
 
