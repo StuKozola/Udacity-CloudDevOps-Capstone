@@ -188,7 +188,7 @@ jobs:
               MLFLOW_S3_ENDPOINT_URL: ${MLFLOW_S3_ENDPOINT_URL}
               AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
               AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-            EoF]
+            EoF
             cat env-config.yml
 
             # deploy to k8s
