@@ -190,9 +190,9 @@ jobs:
       - run:
           name: Expose service and verify it is available
           command: |
-          kubectl -n mlflow get svc mlflow-service
-          kubectl -n mlflow patch svc mlflow-service -p '{"spec": {"type":"LoadBalancer"}}'
-          kubectl -n mlflow get svc mlflow-service
+            kubectl -n mlflow get svc mlflow-service
+            kubectl -n mlflow patch svc mlflow-service -p '{"spec": {"type":"LoadBalancer"}}'
+            kubectl -n mlflow get svc mlflow-service
 
       - destroy-environment         
 
