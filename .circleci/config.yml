@@ -179,7 +179,7 @@ jobs:
           name: Create PostgreSQL, and MLFlow Services
           command: |
             # set environment variables for k8s
-            setenv MLFLOW_S3_ENDPOINT_URL "S3://mlflow-artifacts-${CIRCLE_WORKFLOW_ID:0:7}"
+            export MLFLOW_S3_ENDPOINT_URL="S3://mlflow-artifacts-${CIRCLE_WORKFLOW_ID:0:7}"
             echo "MLFLOW_S3_ENDPOINT_URL set to $MLFLOW_S3_ENDPOINT_URL"
 
             # add envs to env-config.yml
