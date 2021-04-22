@@ -178,10 +178,21 @@ jobs:
           command: |
             kubectl version --short --client
             kubectl get po -A
+            kuebectl create namespace mlflow
             kubectl create -f k8/postgres.yml
             kubectl create -f k8/minio.yml
             kubectl create -f k8/mlflow-server.yml
             kubectl get services
+            kubectl get nodes -o wide
+            kubectl get pods --all-namespaces -o wide
+
+
+      - run:
+          name: Expose service and verify it is available
+          command: |
+          kubectl -n mlflow get svc mlflow-service
+          kubectl -n mlflow patch svc mlflow-service -p '{"spec": {"type":"LoadBalancer"}}'
+          kubectl -n mlflow get svc mlflow-service
 
       - destroy-environment         
 
