@@ -178,9 +178,23 @@ jobs:
       - run:
           name: Create PostgreSQL, and MLFlow Services
           command: |
+            # set environment variables for k8s
+            setenv MLFLOW_S3_ENDPOINT_URL "S3://mlflow-artifacts-${CIRCLE_WORKFLOW_ID:0:7}"
+            echo "MLFLOW_S3_ENDPOINT_URL set to $MLFLOW_S3_ENDPOINT_URL"
+
+            # add envs to env-config.yml
+            cat << EoF >> env-config.yml
+            data:
+              MLFLOW_S3_ENDPOINT_URL: ${MLFLOW_S3_ENDPOINT_URL}
+              AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+              AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+            EoF]
+            cat env-config.yml
+
+            # deploy to k8s
             kubectl create namespace mlflow
+            kubectl apply -f env-config.yml
             kubectl create -f k8/postgres.yml
-            kubectl create -f k8/minio.yml
             kubectl create -f k8/mlflow-server.yml
             kubectl get services
             kubectl get nodes -o wide
