@@ -191,6 +191,7 @@ jobs:
           command: |
             kubectl -n mlflow get svc mlflow-service
             kubectl -n mlflow patch svc mlflow-service -p '{"spec": {"type":"LoadBalancer"}}'
+            sleep 10
             kubectl -n mlflow get svc mlflow-service
 
       - destroy-environment         

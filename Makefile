@@ -13,6 +13,9 @@ DOCKERPATH=kozola/$(MLFLOW_SERVER)
 DEV_HOST=mlflow-dev
 DEV_TRACKING=mlflow-server.local
 DEV_MINIO=mlflow-minio.local
+AWS_REGION=us-east-1
+CLUSTER=mlflow-test
+
 
 ### Setup an installation
 setup-ubuntu:
@@ -129,6 +132,10 @@ scan:
 	docker compose exec api anchore-cli image vuln ${MLFLOW_SERVER} all
 	docker compose exec api anchore-cli evaluate check ${MLFLOW_SERVER}
 
+### Conifgure kubeconfig for AWS EKS
+kubeconfig:
+	aws eks --region ${AWS_REGION} update-kubeconfig --name ${CLUSTER}
+	kubectl get svc
 
 ### Deployment of artifacts
 upload-image:
