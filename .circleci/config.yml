@@ -183,13 +183,13 @@ jobs:
             echo "MLFLOW_S3_ENDPOINT_URL set to $MLFLOW_S3_ENDPOINT_URL"
 
             # add envs to env-config.yml
-            cat \<< EoF >> env-config.yml
+            cat \<< EoF >> ./k8/env-config.yml
             data:
               MLFLOW_S3_ENDPOINT_URL: ${MLFLOW_S3_ENDPOINT_URL}
               AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
               AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
             EoF
-            cat env-config.yml
+            cat ./k8/env-config.yml
 
             # deploy to k8s
             kubectl create namespace mlflow
