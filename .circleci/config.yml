@@ -252,7 +252,7 @@ jobs:
             apt -y install jq
 
       - run:
-          name: Get MLFLOW Server hostname
+          name: Set up python environment and run test
           command: |
             MLFLOW_SERVER_HOSTNAME=`curl -H \
               "token: << pipeline.parameters.memstash-token >>" \
@@ -260,9 +260,6 @@ jobs:
             export MLFLOW_TRACKING_SERVER="http://${MLFLOW_SERVER_HOSTNAME}:5000"
             echo "${MLFLOW_TRACKING_SERVER}"
       
-      - run:
-          name: Set up python environment and run test
-          command: |
             # number of experiments currently
             base_url=http://${MLFLOW_SERVER_HOSTNAME}:5000/api/2.0/preview/mlflow/experiments
             # list experiments
@@ -271,17 +268,6 @@ jobs:
             EXP_ID_PRIOR=$(
               curl ${base_url}/list | jq '.experiment_id'
             )
-            EXP_NAME=$(
-              curl -H "Content-Type:application/json" -X GET --data '{"experiment_id": '"$EXP_ID"' }' ${base_url}/get | jq '.experiment.name'
-            )
-            if [[ "$EXP_NAME" == '"test_experiment"' ]]
-            then
-              echo "Successfully added and retrieved experiment"
-            else
-              echo "failure"
-              echo $EXP_NAME
-              exit 1
-            fi
             # install python libraries and run experiment
             make smoke-test
             # verify 4 experiments added
