@@ -26,6 +26,7 @@ commands:
     - run:
         name: Add experiments to repository and verify
         command: |
+          echo "MLFLOW SERVER: ${MLFLOW_SERVER_HOSTNAME}"
           base_url=http://${MLFLOW_SERVER_HOSTNAME}:5000/api/2.0/preview/mlflow/experiments
           # list experiments
           curl ${base_url}/list
@@ -220,7 +221,7 @@ jobs:
               -H "token: << pipeline.parameters.memstash-token >>" \
               --request PUT \
               --data "$MLFLOW_SERVER_HOSTNAME" https://api.memstash.io/values/MLFLOW_SERVER_HOSTNAME_${CIRCLE_WORKFLOW_ID:0:7}
-            echo $MLFLOW_SERVER_HOSTNAME
+            echo "MLFLOW SERVER is at ${MLFLOW_SERVER_HOSTNAME}""
 
             # wait 2 minutes for pods to start up and servers to be available
             sleep 120
@@ -244,7 +245,8 @@ jobs:
             apt -y install git
             apt -y install wget
             apt -y install make
-            qpt -y install curl
+            apt -y install curl
+            apt -y install jq
 
       - run:
           name: Get MLFLOW Server hostname
@@ -258,6 +260,26 @@ jobs:
       - run:
           name: Set up python environment and run test
           command: |
+            # number of experiments currently
+            base_url=http://${MLFLOW_SERVER_HOSTNAME}:5000/api/2.0/preview/mlflow/experiments
+            # list experiments
+            curl ${base_url}/list
+            # retrieve experiment number
+            EXP_ID_PRIOR=$(
+              curl ${base_url}/list | jq '.experiment_id'
+            )
+            EXP_NAME=$(
+              curl -H "Content-Type:application/json" -X GET --data '{"experiment_id": '"$EXP_ID"' }' ${base_url}/get | jq '.experiment.name'
+            )
+            if [[ "$EXP_NAME" == '"test_experiment"' ]]
+            then
+              echo "Successfully added and retrieved experiment"
+            else
+              echo "failure"
+              echo $EXP_NAME
+              exit 1
+            fi
+            # install python libraries and run experiment
             make smoke-test
             # verify 4 experiments added
 
