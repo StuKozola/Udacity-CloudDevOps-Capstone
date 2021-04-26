@@ -185,6 +185,9 @@ build-local-k8: lint build-img scan upload-img
 ### install for docker build only
 install: setup-env install-env install-hadolint install-docker
 
+## smoke-test remote server
+smoke-test: setup-env install-env test-models
+
 clean:
 	if [ -d "mlruns" ]; then rm -r mlruns; fi;
 	if [ -f "minikube-linux-amd64" ]; then rm -f minikube-linux-amd64; fi;

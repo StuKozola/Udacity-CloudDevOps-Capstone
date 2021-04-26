@@ -3,6 +3,11 @@ version: 2.1
 orbs:
   anchore: anchore/anchore-engine@1.8.6
 
+parameters:
+  memstash-token:
+    type: string
+    default: "3ffae65a-7ef5-43ba-be64-8cb88a18dd11"
+
 commands:
   destroy-environment:
     description: Destroy s3 bucket and EKS infrastructure for current workflow
@@ -21,7 +26,7 @@ commands:
     - run:
         name: Add experiments to repository and verify
         command: |
-          base_url=http://localhost:5000/api/2.0/preview/mlflow/experiments
+          base_url=http://${MLFLOW_SERVER_HOSTNAME}:5000/api/2.0/preview/mlflow/experiments
           # list experiments
           curl ${base_url}/list
           # add experiment
@@ -127,6 +132,8 @@ jobs:
               echo "failure"
               exit 1
             fi
+            
+            export MLFLOW_SERVER_HOSTNAME="localhost"
 
       - test-add-experiments
   
@@ -207,10 +214,58 @@ jobs:
             kubectl -n mlflow patch svc mlflow-service -p '{"spec": {"type":"LoadBalancer"}}'
             sleep 10
             kubectl -n mlflow get svc mlflow-service
+            export MLFLOW_SERVER_HOSTNAME=(`kubectl -n mlflow get svc mlflow-service -o=jsonpath="{.status.loadBalancer.ingress[].hostname}"`)
+            
+            # put HOSTNAME in the shared memory
+            curl -H "Content-Type: text/plain" \
+              -H "token: << pipeline.parameters.memstash-token >>" \
+              --request PUT \
+              --data "$MLFLOW_SERVER_HOSTNAME" https://api.memstash.io/values/MLFLOW_SERVER_HOSTNAME_${CIRCLE_WORKFLOW_ID:0:7}
+            echo $MLFLOW_SERVER_HOSTNAME
 
-      - destroy-environment         
+            # wait 2 minutes for pods to start up and servers to be available
+            sleep 120
 
-workflows:
+      - test-add-experiments
+      - destroy-environment
+
+  smoke-test:
+    docker:
+      - image: python:3.8.2-slim
+    working_directory: ~/repo
+    
+    steps:
+      - checkout
+
+      - run:
+          name: Install dependencies
+          command: |
+            apt -y update
+            apt -y upgrade
+            apt -y install sudo
+            ls -al /bin/sh && sudo rm /bin/sh && sudo ln -s /bin/bash /bin/sh && ls -al /bin/sh
+            apt -y install git
+            apt -y install wget
+            apt -y install make
+            qpt -y install curl
+
+      - run:
+          name: Get MLFLOW Server hostname
+          command: |
+            BACKEND_URL=`curl -H \
+              "token: << pipeline.parameters.memstash-token >>" \
+              --request GET https://api.memstash.io/values/MLFLOW_SERVER_HOSTNAME_${CIRCLE_WORKFLOW_ID:0:7}`
+            export MLFLOW_SERVER_HOSTNAME_="http://${MLFLOW_SERVER_HOSTNAME_}:3030"
+            echo "${MLFLOW_SERVER_HOSTNAME_}"
+      
+      - run:
+          name: Set up python environment and run test
+          command: |
+            make smoke-test
+            # verify 4 experiments added
+
+
+ workflows:
   MLFlow-AWS:
     jobs:
       - build-server:
