@@ -116,7 +116,6 @@ jobs:
     working_directory: ~/repo
     steps:
       - checkout
-     
       - run: 
           name: Download image and check that is it running
           command: |
@@ -233,10 +232,8 @@ jobs:
     docker:
       - image: python:3.8.2-slim
     working_directory: ~/repo
-    
     steps:
       - checkout
-
       - run:
           name: Install dependencies
           command: |
@@ -252,11 +249,11 @@ jobs:
       - run:
           name: Get MLFLOW Server hostname
           command: |
-            BACKEND_URL=`curl -H \
+            MLFLOW_SERVER_HOSTNAME=`curl -H \
               "token: << pipeline.parameters.memstash-token >>" \
               --request GET https://api.memstash.io/values/MLFLOW_SERVER_HOSTNAME_${CIRCLE_WORKFLOW_ID:0:7}`
-            export MLFLOW_SERVER_HOSTNAME_="http://${MLFLOW_SERVER_HOSTNAME_}:3030"
-            echo "${MLFLOW_SERVER_HOSTNAME_}"
+            export MLFLOW_TRACKING_SERVER="http://${MLFLOW_SERVER_HOSTNAME}:5000"
+            echo "${MLFLOW_TRACKING_SERVER}"
       
       - run:
           name: Set up python environment and run test
@@ -264,8 +261,7 @@ jobs:
             make smoke-test
             # verify 4 experiments added
 
-
- workflows:
+workflows:
   MLFlow-AWS:
     jobs:
       - build-server:
@@ -279,9 +275,9 @@ jobs:
       # - configure-infrastructure:
       #     context: CAPSTONE
       #     requires: [deploy-infrastructure]
-      # - smoke-test:
-      #     context: mlflow
-      #     requires: [deploy-backend, deploy-frontend]
+      - smoke-test:
+          context: CAPSTONE
+          requires: [deploy-infrastructure]
       # - cloudfront-update:
       #     context: mlflow
       #     requires: [smoke-test]
