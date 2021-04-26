@@ -193,7 +193,7 @@ jobs:
 
             # deploy to k8s
             kubectl create namespace mlflow
-            kubectl apply -f env-config.yml
+            kubectl apply -f k8/env-config.yml
             kubectl create -f k8/postgres.yml
             kubectl create -f k8/mlflow-server.yml
             kubectl get services
