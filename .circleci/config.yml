@@ -221,7 +221,7 @@ jobs:
               -H "token: << pipeline.parameters.memstash-token >>" \
               --request PUT \
               --data "$MLFLOW_SERVER_HOSTNAME" https://api.memstash.io/values/MLFLOW_SERVER_HOSTNAME_${CIRCLE_WORKFLOW_ID:0:7}
-            echo "MLFLOW SERVER is at ${MLFLOW_SERVER_HOSTNAME}""
+            echo "MLFLOW SERVER is at ${MLFLOW_SERVER_HOSTNAME}"
 
             # wait 2 minutes for pods to start up and servers to be available
             sleep 120
