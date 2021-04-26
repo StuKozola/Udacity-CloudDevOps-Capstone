@@ -26,6 +26,7 @@ commands:
     - run:
         name: Add experiments to repository and verify
         command: |
+          source .env
           echo "MLFLOW SERVER: ${MLFLOW_SERVER_HOSTNAME}"
           base_url=http://${MLFLOW_SERVER_HOSTNAME}:5000/api/2.0/preview/mlflow/experiments
           # list experiments
@@ -133,7 +134,7 @@ jobs:
               exit 1
             fi
             
-            export MLFLOW_SERVER_HOSTNAME="localhost"
+            echo "MLFLOW_SERVER_HOSTNAME=localhost" > .env
 
       - test-add-experiments
   
@@ -222,12 +223,14 @@ jobs:
               --request PUT \
               --data "$MLFLOW_SERVER_HOSTNAME" https://api.memstash.io/values/MLFLOW_SERVER_HOSTNAME_${CIRCLE_WORKFLOW_ID:0:7}
             echo "MLFLOW SERVER is at ${MLFLOW_SERVER_HOSTNAME}"
+            echo "MLFLOW_SERVER_HOSTNAME=${MLFLOW_SERVER_HOSTNAME}" > .env
 
             # wait 2 minutes for pods to start up and servers to be available
             sleep 120
+            curl https://${MLFLOW_SERVER_HOSTNAME}:5000/api/2.0/preview/mlflow/experiments/list
 
       - test-add-experiments
-      - destroy-environment
+      #- destroy-environment
 
   smoke-test:
     docker:
