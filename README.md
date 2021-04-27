@@ -56,7 +56,6 @@ Build
 Test
 Deployment
 
-
 ## Dependencies
 
 This project has been developed and validated on Ubuntu linux.  A makefile is provided that can be used for installing, configuring, and running this project on a desktop or VM from the git repository.  If you are using a different platform, you will need to have these dependencies installed prior using this repo.
@@ -100,6 +99,3 @@ After running these commands, you should see the MLFlow experiment tracking app 
 ![MLFlow Experiment Tracking App with 4 runs](images/local_run_k8.png)
 
 You can also run `make clean` to clean up temporary downloaded files, and `make destroy` to shut down and delete pods created in minikube.
-### Continuous Deployment Pipeline
-
-
