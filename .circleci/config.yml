@@ -257,8 +257,8 @@ jobs:
             MLFLOW_SERVER_HOSTNAME=`curl -H \
               "token: << pipeline.parameters.memstash-token >>" \
               --request GET https://api.memstash.io/values/MLFLOW_SERVER_HOSTNAME_${CIRCLE_WORKFLOW_ID:0:7}`
-            export MLFLOW_TRACKING_SERVER="http://${MLFLOW_SERVER_HOSTNAME}:5000"
-            echo "${MLFLOW_TRACKING_SERVER}"
+            export MLFLOW_TRACKING_URI="http://${MLFLOW_SERVER_HOSTNAME}:5000"
+            echo "${MLFLOW_TRACKING_URI}"
       
             # number of experiments currently
             base_url=http://${MLFLOW_SERVER_HOSTNAME}:5000/api/2.0/preview/mlflow/experiments
@@ -268,7 +268,7 @@ jobs:
             
             # retrieve experiment number
             EXP_ID_PRIOR=$(
-              curl ${base_url}/list | jq '.experiment_id'
+              curl ${base_url}/list | jq '.experiments | last | .experiment_id'
             )
            
             # install python libraries and run experiment
@@ -276,8 +276,18 @@ jobs:
             
             # verify 4 experiments added
             EXP_ID=$(
-              curl ${base_url}/list | jq '.experiment_id'
+              curl ${base_url}/list | jq '.experiments | last | .experiment_id'
             )
+
+            if [[ $EXP_ID >= (expr $EXP_ID_PRIOR + 4) ]]
+            then
+              echo "Successfully added and retrieved experiment"
+            else
+              echo "failure"
+              echo $EXP_ID
+              exit 1
+            fi
+
 
 workflows:
   MLFlow-AWS:
