@@ -271,6 +271,9 @@ jobs:
             # install python libraries and run experiment
             make smoke-test
             # verify 4 experiments added
+            EXP_ID=$(
+              curl ${base_url}/list | jq '.experiment_id'
+            )
 
 workflows:
   MLFlow-AWS:
