@@ -227,7 +227,7 @@ jobs:
 
             # wait 5 minutes for pods to start up and servers to be available
             sleep 300
-            curl https://${MLFLOW_SERVER_HOSTNAME}:5000/api/2.0/preview/mlflow/experiments/list
+            curl http://${MLFLOW_SERVER_HOSTNAME}:5000/api/2.0/preview/mlflow/experiments/list
 
       - test-add-experiments
       #- destroy-environment
