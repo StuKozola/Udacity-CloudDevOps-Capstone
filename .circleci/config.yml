@@ -184,7 +184,7 @@ jobs:
             kubectl get po -A
       
       - run:
-          name: Create PostgreSQL, and MLFlow Services
+          name: Create PostgreSQL and MLFlow Services
           command: |
             # set environment variables for k8s
             export MLFLOW_S3_ENDPOINT_URL="S3://mlflow-artifacts-${CIRCLE_WORKFLOW_ID:0:7}"
@@ -225,8 +225,8 @@ jobs:
             echo "MLFLOW SERVER is at ${MLFLOW_SERVER_HOSTNAME}"
             echo "MLFLOW_SERVER_HOSTNAME=${MLFLOW_SERVER_HOSTNAME}" > .env
 
-            # wait 2 minutes for pods to start up and servers to be available
-            sleep 120
+            # wait 5 minutes for pods to start up and servers to be available
+            sleep 300
             curl https://${MLFLOW_SERVER_HOSTNAME}:5000/api/2.0/preview/mlflow/experiments/list
 
       - test-add-experiments
@@ -262,14 +262,18 @@ jobs:
       
             # number of experiments currently
             base_url=http://${MLFLOW_SERVER_HOSTNAME}:5000/api/2.0/preview/mlflow/experiments
+           
             # list experiments
             curl ${base_url}/list
+            
             # retrieve experiment number
             EXP_ID_PRIOR=$(
               curl ${base_url}/list | jq '.experiment_id'
             )
+           
             # install python libraries and run experiment
             make smoke-test
+            
             # verify 4 experiments added
             EXP_ID=$(
               curl ${base_url}/list | jq '.experiment_id'

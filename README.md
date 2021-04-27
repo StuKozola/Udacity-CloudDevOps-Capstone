@@ -29,20 +29,19 @@ Follow these steps to re-create the service on AWS.  Before you begin, please se
 
 ### Step 2: Create AWS Access and EC2 Key
 
-
-## Step 3: Configure CircleCI
+### Step 3: Configure CircleCI
 
 Create an account on CircleCI using the free tier.  Once created, [add the github project](https://circleci.com/docs/2.0/getting-started/#setting-up-circleci) to CircleCI.  You will need to create a  [Context](https://circleci.com/docs/2.0/contexts/) named `CAPSTONE` to define the environment variables needed for the project before running it.  The variables to define are shown below.
 
 ```bash
-AWS_ACCESS_KEY_ID=<Your AWS Access Key>	
-AWS_DEFAULT_REGION=<Your AWS Region of Choice>	
+AWS_ACCESS_KEY_ID=<Your AWS Access Key>
+AWS_DEFAULT_REGION=<Your AWS Region of Choice>
 AWS_EC2_KEY_NAME=<Your EC2 Key>
-AWS_SECRET_ACCESS_KEY=<Your AWS Secret Access Key>	
+AWS_SECRET_ACCESS_KEY=<Your AWS Secret Access Key>
 DOCKER_PASS=<Your DockerHub Password>
 DOCKER_USER=<Your DockerHub Username>
 PGDATA=/var
-POSTGRES_DB=mlflowdb	
+POSTGRES_DB=mlflowdb
 POSTGRES_PASSWORD=<choose your own>
 POSTGRES_USER=<choose your own>
 ```
@@ -51,7 +50,12 @@ Your context should be similar to the one below.
 
 ![Example CAPSTONE Context](images/context.png)
 
-### Step 3: Run 
+### Step 3: Start the worfklow in CircleCI
+
+Build
+Test
+Deployment
+
 
 ## Dependencies
 
