@@ -207,11 +207,11 @@ jobs:
             kubectl get services
             kubectl get nodes -o wide
             kubectl get pods --all-namespaces -o wide
-
+          # --> TODO: Assign CLUSTER NAME BELOW DUMMY
       - run:
           name: Assign IAM policy for S3 Access
           command: |
-            for STACK_NAME in $(eksctl get nodegroup --cluster $CLUSTER_NAME -o json | jq -r '.[].StackName')
+            for STACK_NAME in $(eksctl get nodegroup --cluster "mlflow-eks-${CIRCLE_WORKFLOW_ID:0:7}" -o json | jq -r '.[].StackName')
             do
               ROLE_NAME=$(aws cloudformation describe-stack-resources --stack-name $STACK_NAME | jq -r '.StackResources[] | select(.ResourceType=="AWS::IAM::Role") | .PhysicalResourceId')
 
