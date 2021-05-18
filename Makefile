@@ -106,6 +106,7 @@ lint:
 	# lint dockerfiles: https://github.com/hadolint/hadolint
 	hadolint Dockerfile
 	# lint python source: https://www.pylint.org/
+	pylint ./model/train.py
 
 test-models:
 	# train the model with four trial runs
