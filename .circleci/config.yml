@@ -286,10 +286,11 @@ jobs:
             make smoke-test
             
             # verify 4 experiments added
+            curl ${base_url}/list
             EXP_ID=$(curl ${base_url}/list | jq '.experiments | last | .experiment_id')
             echo "New IDs: ${EXP_ID}"
 
-            if [[ $EXP_ID >= (expr $EXP_ID_PRIOR + 4) ]]
+            if [[ $EXP_ID >= expr $EXP_ID_PRIOR + 4 ]]
             then
               echo "Successfully added and retrieved experiment"
             else
