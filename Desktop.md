@@ -1,4 +1,4 @@
-# Instructrions for running on a local machine
+# Instructions for running on a local machine
 
 ## Data Scientists Sandbox
 

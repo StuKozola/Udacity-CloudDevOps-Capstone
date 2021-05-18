@@ -4,6 +4,9 @@ Parameters:
   WorkflowID:
     Description: Unique identifier.
     Type: String
+  mlflowHostName:
+    Description: URL to k8 service for mlflow
+    Type: String
 
 
 Resources:
@@ -36,7 +39,12 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Sub "mlflow-cloudfront-${WorkflowID}"
-      AccessControl: Private
+      AccessControl: PublicRead
+      WebsiteConfiguration:
+        IndexDocument: index.html
+      RedirectAllRequestsTo:
+        HostName: mlflowHostName
+        Protocol: http
   
   MLFlowBucketPolicy:
     Type: AWS::S3::BucketPolicy

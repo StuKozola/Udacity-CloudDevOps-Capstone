@@ -320,11 +320,15 @@ jobs:
       - run:
           name: Update cloudfront distribution
           command: |
+            MLFLOW_SERVER_HOSTNAME=`curl -H \
+              "token: << pipeline.parameters.memstash-token >>" \
+              --request GET https://api.memstash.io/values/MLFLOW_SERVER_HOSTNAME_${CIRCLE_WORKFLOW_ID:0:7}`
+            export HOST="http://${MLFLOW_SERVER_HOSTNAME}:5000"
             aws cloudformation deploy \
               --template-file .circleci/aws/cloudfront.yml \
               --tags project=mlflow \
               --stack-name "mlflow-cloudfront" \
-              --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}"
+              --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" mlflowHostName="${HOST}"
       - destroy-environment
 
   cleanup:

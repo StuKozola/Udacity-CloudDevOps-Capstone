@@ -1,4 +1,4 @@
-# CAPSTONE PROJECT FOR UDACITY's Cloud DevOps Engineering Nanodegree
+# Capstone Project for UDACITY's Cloud DevOps Engineering Nanodegree
 
 ## Project Scope
 
