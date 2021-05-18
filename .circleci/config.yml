@@ -273,30 +273,27 @@ jobs:
             echo "${MLFLOW_TRACKING_URI}"
       
             # number of experiments currently
-            base_url=http://${MLFLOW_SERVER_HOSTNAME}:5000/api/2.0/preview/mlflow/experiments
+            base_url=http://${MLFLOW_SERVER_HOSTNAME}:5000/api/2.0/preview/mlflow/registered-models
            
-            # list experiments
+            # list models
             curl ${base_url}/list
-            
-            # retrieve experiment number
-            EXP_ID_PRIOR=$(curl ${base_url}/list | jq '.experiments | last | .experiment_id')
-            echo "Current IDs: ${EXP_ID_PRIOR}"
 
             # install python libraries and run experiment
             make smoke-test
             
             # verify 4 experiments added
             curl ${base_url}/list
-            EXP_ID=$(curl ${base_url}/list | jq '.experiments | last | .experiment_id')
-            echo "New IDs: ${EXP_ID}"
+            RUN_ID=$(curl ${base_url}/list | jq '.registered_models | last | .latest_versions | last | .version')
+            echo "New IDs: ${RUN_ID}"
 
-            if [[ $EXP_ID >= expr $EXP_ID_PRIOR + 4 ]]
+            VAR=$(echo $RUN_ID | tr -d '"')
+            if [[ $VAR == 4 ]]
             then
               echo "Successfully added and retrieved experiment"
             else
               echo "failure"
-              echo $EXP_ID
-              exit 1
+              echo $RUN_ID
+              #exit 1
             fi
 
 
