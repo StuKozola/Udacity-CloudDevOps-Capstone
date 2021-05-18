@@ -2,7 +2,6 @@
 version: 2.1
 orbs:
   anchore: anchore/anchore-engine@1.8.6
-  aws-cli: circleci/aws-cli@1.3.0
 
 parameters:
   memstash-token:
@@ -333,10 +332,26 @@ jobs:
 
   cleanup:
     docker:
-      - image: cimg/base:2020.01
+      - image: amazon/aws-cli
     steps:
       - checkout
-      - aws-cli/setup
+      - run:
+          name: Install dependencies
+          command: |
+            yum -y install tar gzip jq git
+            yum -y install sudo
+            ls -al /bin/sh && sudo rm /bin/sh && sudo ln -s /bin/bash /bin/sh && ls -al /bin/sh
+           
+      - run:
+          name: Install kubectl and eksctl
+          command: |
+            curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.19.6/2021-01-05/bin/linux/amd64/kubectl
+            chmod +x ./kubectl
+            sudo mv ./kubectl /usr/local/bin
+            kubectl version --short --client
+            curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+            sudo mv /tmp/eksctl /usr/local/bin
+            eksctl version
       - run:
           name: Get old stack workflow id and remove old stacks/files
           command: |

@@ -41,10 +41,9 @@ Resources:
       BucketName: !Sub "mlflow-cloudfront-${WorkflowID}"
       AccessControl: PublicRead
       WebsiteConfiguration:
-        IndexDocument: index.html
-      RedirectAllRequestsTo:
-        HostName: mlflowHostName
-        Protocol: http
+        RedirectAllRequestsTo:
+          HostName: !Sub "${mlflowHostName}"
+          Protocol: http
   
   MLFlowBucketPolicy:
     Type: AWS::S3::BucketPolicy
