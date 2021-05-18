@@ -279,17 +279,15 @@ jobs:
             curl ${base_url}/list
             
             # retrieve experiment number
-            EXP_ID_PRIOR=$(
-              curl ${base_url}/list | jq '.experiments | last | .experiment_id'
-            )
-           
+            EXP_ID_PRIOR=$(curl ${base_url}/list | jq '.experiments | last | .experiment_id')
+            echo "Current IDs: ${EXP_ID_PRIOR}"
+
             # install python libraries and run experiment
             make smoke-test
             
             # verify 4 experiments added
-            EXP_ID=$(
-              curl ${base_url}/list | jq '.experiments | last | .experiment_id'
-            )
+            EXP_ID=$(curl ${base_url}/list | jq '.experiments | last | .experiment_id')
+            echo "New IDs: ${EXP_ID}"
 
             if [[ $EXP_ID >= (expr $EXP_ID_PRIOR + 4) ]]
             then
