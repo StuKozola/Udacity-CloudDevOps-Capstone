@@ -65,7 +65,6 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            circleci-agent step halt
             apt -y update
             apt -y upgrade
             apt -y install sudo
@@ -122,7 +121,6 @@ jobs:
       - run: 
           name: Download image and check that is it running
           command: |
-            circleci-agent step halt
             docker pull $DOCKER_USER/mlflow_server
             docker run -p 5000:5000 -d --name test_server $DOCKER_USER/mlflow_server --host 0.0.0.0
             docker container ls
@@ -243,7 +241,7 @@ jobs:
             curl http://${MLFLOW_SERVER_HOSTNAME}:5000/api/2.0/preview/mlflow/experiments/list
 
       - test-add-experiments
-      #- destroy-environment
+      - destroy-environment
 
   smoke-test:
     docker:
@@ -296,6 +294,7 @@ jobs:
               echo $RUN_ID
               #exit 1
             fi
+      - destroy-environment
   
   cloudfront-update:
     docker:
@@ -326,6 +325,7 @@ jobs:
               --tags project=mlflow \
               --stack-name "mlflow-cloudfront" \
               --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}"
+      - destroy-environment
 
   cleanup:
     docker:
@@ -368,8 +368,8 @@ workflows:
           context: CAPSTONE
           requires: [deploy-infrastructure]
       - cloudfront-update:
-          context: mlflow
+          context: CAPSTONE
           requires: [smoke-test]
       - cleanup:
-          context: mlflow
+          context: CAPSTONE
           requires: [cloudfront-update]

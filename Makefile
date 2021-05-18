@@ -171,7 +171,7 @@ run-local-k8: set-dev-env
 	# run local minikube configuration
 	kubectl create -f k8/postgres.yml
 	kubectl create -f k8/minio.yml
-	kubectl create -f k8/mlflow-server.yml
+	kubectl create -f k8/mlflow-server-local.yml
 	kubectl get services
 
 ### local only (no docker, no minikube)
