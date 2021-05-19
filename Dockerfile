@@ -1,7 +1,7 @@
 # Dockerfile used to package mlflow server
 
 # Base image
-FROM python:3.8.2-slim
+FROM python:3.8.10-slim
 
 # Install dependencies for mlflow, sqlalchemy, and aws cli
 RUN pip install --no-cache-dir mlflow[extras]==1.14.1 && \
