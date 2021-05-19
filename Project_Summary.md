@@ -44,15 +44,15 @@ Shown below are screenshots for a failed scan job and succesful scan of the Dock
 ![Passed Scan](images/pass-scan.png)
 
 ## Deployment
-Once deployed, the mlflow user interface can be accessed through the url set up in cloudfront and the associated S3 bucket (with redirect).
+Once deployed, the mlflow user interface can be accessed through the url set up in cloudfront and the associated S3 bucket (with redirect).  The url is an output of the cloudformation job associated to cloudfront.
 
-![redirect](images/s3redirect.png)
+![redirect](images/cloudfront.png)
 
 It will redirect to the service exposed in the kubernetes pods on port 5000.  Here is an example screenshot of the originally deployed service.
 
 ![Green](images/green.png)
 
-Here is a screenshot of the service after a second deployment.  Note the change in the parameters used for the second deployment are different (alpha and l1_ratio were changed and resubmitted to git to trigger the new deployment).
+Here is a screenshot of the service after a second deployment.  Note the change in the parameters used for the second deployment are different (alpha and l1_ratio were changed and resubmitted to git to trigger the new deployment).  
 
 ![Blue](images/blue.png)
 
