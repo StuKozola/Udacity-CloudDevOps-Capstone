@@ -64,6 +64,10 @@ Your context should be similar to the one below.
 
 Now that you have linked CircleCI to you gitHub repo, start the first build.  The pipeline will be processed each time code is submitted to the master branch (you can change this in you CircleCI configuration if desired).
 
+A successful deployment in CircleCI is shown below.
+
+![workflow](images/workflow.png)
+
 ## Step 4: View and interact with the deployed mlflow service
 The mlflow server is exposed on port 5000.  You can find the url from as an output in the cloudfront deployment through cloud formation in the output tab.
 
