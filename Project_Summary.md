@@ -16,7 +16,7 @@ This project uses a blue/green deployment approach by modifying CloudFront to po
 
 The pipeline chosen was implemented in `.circleci/config.yml`.  Show below are screen shots for successful deployment.
 
-![Workflow](images/build.png)
+![Workflow](images/workflow.png)
 
 ![build](images/build.png)
 

@@ -97,7 +97,7 @@ jobs:
       
       - anchore/analyze_local_image:
           image_name: 'mlflow_server:latest'
-          policy_failure: false
+          policy_failure: true
           timeout: '500'
 
       - anchore/parse_reports

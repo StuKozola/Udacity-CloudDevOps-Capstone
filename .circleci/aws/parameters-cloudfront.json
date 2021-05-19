@@ -1,6 +1,10 @@
 [
-    {
-      "ParameterKey": "WorkflowID",
-      "ParameterValue": "34nanisdf9234k23"
-    }
-  ]
+  {
+    "ParameterKey": "WorkflowID",
+    "ParameterValue": "34nanisdf9234k23"
+  },
+  {
+    "ParameterKey": "mlflowHostName",
+    "ParameterValue": "google.com"
+  }
+]
