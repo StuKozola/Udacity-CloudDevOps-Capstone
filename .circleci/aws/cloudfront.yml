@@ -42,7 +42,7 @@ Resources:
       AccessControl: PublicRead
       WebsiteConfiguration:
         RedirectAllRequestsTo:
-          HostName: !Sub "http://${mlflowHostName}"
+          HostName: !Sub "${mlflowHostName}"
           Protocol: http
   
   MLFlowBucketPolicy:

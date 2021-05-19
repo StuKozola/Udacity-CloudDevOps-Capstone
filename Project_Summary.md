@@ -2,7 +2,7 @@
 
 ## Project Scope
 
-Continuous Delivery of a web service for managing machine learning models using [mlflow](https://mlflow.org).  Illustrated below is the pipeline chosen for building MLFlow into a docker container and deploying it to AWS EKS. 
+Continuous Delivery of a web service for managing machine learning models using [mlflow](https://mlflow.org).  Illustrated below is the pipeline chosen for building mlflow into a docker container and deploying it to AWS EKS. 
 
 ![Continuous Delivery Pipeline](images/pipeline.png)
 
@@ -10,33 +10,49 @@ The architecture for the project is shown below.
 
 ![Architecture of Solution](images/architecture.png)
 
-This project uses a blue/green deployment approach by modifying CloudFront for a new deployment.  If a new job fails along the way, any infrastructure created is destroyed and the prior deployment remains operational.
+This project uses a blue/green deployment approach by modifying CloudFront to point to a new mlflow server url from EKS for a new deployment.  If a new job fails along the way, any infrastructure created is destroyed and the prior deployment remains operational.  This is denoted in the red lines in the pipeline diagram above.
 
 ## Circle CI Automation
 
-The pipeline chosen was implemented in .circleci/config.yml.  Show below are screen shots for successful deployment.
+The pipeline chosen was implemented in `.circleci/config.yml`.  Show below are screen shots for successful deployment.
 
-![Continuous Delivery Pipeline](images/build.png)
+![Workflow](images/build.png)
 
-![Continuous Delivery Pipeline](images/build.png)
+![build](images/build.png)
 
-![Continuous Delivery Pipeline](images/build.png)
+![test](images/test.png)
 
-![Continuous Delivery Pipeline](images/build.png)
+![deploy](images/deploy.png)
+
+![smoke](images/smoke.png)
+
+![bluegreen](images/bluegreen.png)
+
+![cleanup](images/cleanup.png)
 
 
-Shown below are screenshots for testing of a failed lint job.
+Shown below are screenshots for testing of a failed lint job of the Dockerfile and the passed file.
 
-Shown below are screenshots for a failed scan job and succesful scan.
+![Failed lint](images/fail-lint.png)
+
+![Passed lint](images/pass-lint.png)
+
+Shown below are screenshots for a failed scan job and succesful scan of the Docker container.
+
 ![Failed Scan](images/fail-scan.png)
+
 ![Passed Scan](images/pass-scan.png)
 
 ## Deployment
-Once deployed, the mlflow user interface can be accessed through the url set up in cloudfront.  It will redirect to the service exposed in the pods on port 5000.  Here is an example screenshot of the originally deployed service.
+Once deployed, the mlflow user interface can be accessed through the url set up in cloudfront and the associated S3 bucket (with redirect).
+
+![redirect](images/s3redirect.png)
+
+It will redirect to the service exposed in the kubernetes pods on port 5000.  Here is an example screenshot of the originally deployed service.
 
 ![Green](images/green.png)
 
-Here is a screenshot of the service after a second deployment.  Note the change in the parameters used for the second deployment are different.
+Here is a screenshot of the service after a second deployment.  Note the change in the parameters used for the second deployment are different (alpha and l1_ratio were changed and resubmitted to git to trigger the new deployment).
 
 ![Blue](images/blue.png)
 
