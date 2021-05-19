@@ -291,7 +291,7 @@ jobs:
             else
               echo "failure"
               echo $RUN_ID
-              #exit 1
+              exit 1
             fi
       - destroy-environment
   
@@ -322,7 +322,7 @@ jobs:
             MLFLOW_SERVER_HOSTNAME=`curl -H \
               "token: << pipeline.parameters.memstash-token >>" \
               --request GET https://api.memstash.io/values/MLFLOW_SERVER_HOSTNAME_${CIRCLE_WORKFLOW_ID:0:7}`
-            export HOST="http://${MLFLOW_SERVER_HOSTNAME}:5000"
+            export HOST="${MLFLOW_SERVER_HOSTNAME}:5000"
             aws cloudformation deploy \
               --template-file .circleci/aws/cloudfront.yml \
               --tags project=mlflow \

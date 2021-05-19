@@ -113,9 +113,9 @@ test-models:
 		export $$(grep -v '^#' .env | xargs); \
 	fi; \
 	python model/train.py 1 1; \
-	python model/train.py 1 0.5; \
-	python model/train.py 0.5 1; \
-	python model/train.py 0.5 0.5; \
+	python model/train.py 1 0.2; \
+	python model/train.py 0.2 1; \
+	python model/train.py 0.4 0.3; \
 	deactivate;
 
 build-image:
