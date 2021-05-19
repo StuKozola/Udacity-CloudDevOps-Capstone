@@ -56,6 +56,10 @@ Here is a screenshot of the service after a second deployment.  Note the change 
 
 ![Blue](images/blue.png)
 
+Below is a screenshot of the cloudfront console in AWS showing the a completed deployment.
+
+![Green](images/finaldeploy.png)
+
 ## Project Rubric
 
 ### Set Up Pipeline
@@ -68,7 +72,7 @@ Use image repository to store Docker images | The project uses a centralized ima
 ### Build Docker Container
 Criteria | Meets Specifications | Artifact
 --- | --- | ---
-Execute linting step in code pipeline | Code is checked against a linter as part of a Continuous Integration step (demonstrated w/ two screenshots) | ![fail](images/fail-linting.png) ![pass](images/pass-linting.png) 
+Execute linting step in code pipeline | Code is checked against a linter as part of a Continuous Integration step (demonstrated w/ two screenshots) | ![fail](images/fail-lint.png) ![pass](images/pass-lint.png) 
 Build a Docker container in a pipeline | The project takes a Dockerfile and creates a Docker container in the pipeline. | [Dockerfile](Dockerfile)
 
 ### Successful Deployment
