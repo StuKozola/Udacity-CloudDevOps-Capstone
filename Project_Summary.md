@@ -17,9 +17,13 @@ This project uses a blue/green deployment approach by modifying CloudFront for a
 The pipeline chosen was implemented in .circleci/config.yml.  Show below are screen shots for successful deployment.
 
 ![Continuous Delivery Pipeline](images/build.png)
+
 ![Continuous Delivery Pipeline](images/build.png)
+
 ![Continuous Delivery Pipeline](images/build.png)
+
 ![Continuous Delivery Pipeline](images/build.png)
+
 
 Shown below are screenshots for testing of a failed lint job.
 
